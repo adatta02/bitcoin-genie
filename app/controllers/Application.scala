@@ -10,8 +10,12 @@ object Application extends Controller {
     
   def game(id: Int) = Action {
     val game = AvailableKeys.find(id)
-    println(game)
-    Ok( views.html.game() )  
+    
+    if( game.isEmpty ){
+      sys.error("Sorry! That key doesn't exist")
+    }
+    
+    Ok( views.html.game(game.get) )
   }
   
   def index = Action {        

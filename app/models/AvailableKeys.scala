@@ -18,10 +18,6 @@ case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String
 }
 
 object AvailableKeys {
-
-  def someTest(s: String): Int = {
-    0
-  }  
   
   def rowParser = {
     (int("id") ~ str("public_key") ~ get[Double]("amount") ~ str("game"))

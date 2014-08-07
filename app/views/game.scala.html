@@ -1,12 +1,39 @@
 @* game Template File *@
-@(param: Any)
+@(game: AvailableKey)
 
 @main("Play a game!") {
     <div class="container well-container">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner">
-                    Play some awesome game
+                    
+                    <div class="row">
+                        <div class="col-md-12">                    
+		                    <div class="pull-left">
+		                       <h2>Playing @game.getReadableGame at @game.publicKey</h2>
+		                    </div>
+		                    <div class="pull-right">
+		                       <h2>Prize: $@game.amount</h2>
+		                    </div>
+                        </div>
+                    </div>
+
+                    <div class="row margin-top">
+                        <div class="col-md-7">
+                            stuff
+                        </div>
+                        <div class="col-md-5">
+                            <div class="well text-right">
+                                <h3 class="no-margin">How it works:</h3>
+                                <ul class="game-rules">
+                                    <li>Easy! Complete the phrase with at least two words.</li>
+                                    <li>We'll calculate the SHA1 of your complete phrase.</li>
+                                    <li>If the last character matches the last character in the public key, you win!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>    
             </div>
         </div>
