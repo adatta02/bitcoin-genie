@@ -1,0 +1,36 @@
+@(availableKeys: List[AvailableKey])
+
+@main("Welcome!") {
+
+    <div class="container well-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="inner">
+                    <h2 class="text-center">Welcome To The Bitcoin Genie</h2>
+                    
+                    <h3>Available Games:</h3>
+                    
+                    <div class="col-md-7">
+	                    <table class="available-games table table-bordered table-striped">
+	                        <tr>
+	                            <th>Game</th>
+	                            <th>Amount ($)</th>
+	                            <th>Public Key</th>                      
+	                        </tr>
+	                        @for(key <- availableKeys){
+	                            <tr>
+	                                <td><a href="@routes.Application.game(key.id)">@key.getReadableGame</a></td>
+	                                <td>$@key.amount</td>
+	                                <td></td>                               
+	                            </tr>
+	                        }
+	                    </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+ 

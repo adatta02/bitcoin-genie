@@ -1,0 +1,46 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setfive's Bitcoin Genie | @title</title>
+    <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,900' rel='stylesheet' type='text/css'>    
+    <link rel='stylesheet' href='@routes.Assets.at("bootstrap/css/bootstrap.min.css")'>
+    <link rel='stylesheet/less' href='@routes.Assets.at("css/setfive.less")'>
+    <link rel='stylesheet/less' href='@routes.Assets.at("css/styles.less")'>
+    <script type='text/javascript' src='@routes.Assets.at("js/jquery-1.11.1.min.js")'></script>
+    <script type='text/javascript' src='@routes.Assets.at("bootstrap/js/bootstrap.min.js")'></script>
+    <script type='text/javascript' src='@routes.Assets.at("js/less.min.js")'></script>
+</head>
+<body>    
+    
+	<div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
+	        <div class="container">
+	            <div class="navbar-header">
+	                <button data-target=".navbar-collapse" data-toggle="collapse" class="navbar-toggle" type="button">
+	                    <span class="sr-only">Toggle navigation</span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                </button>
+	                <a href="#" class="navbar-brand"></a>
+	            </div>
+	            <div class="collapse navbar-collapse">
+	                <div class="logo">
+	                    <a href="/"><img src="@routes.Assets.at("/images/logo_noconsulting.png")"></a>
+	                </div>
+	                <ul class="nav navbar-nav">
+	                    <li class="active"><a href="/">Home</a></li>
+	                </ul>
+	            </div><!--/.nav-collapse -->
+	        </div>
+	</div>    
+    
+    <div class="content-container">
+        @content
+    </div>
+    
+</body>
+</html>
