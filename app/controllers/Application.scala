@@ -15,7 +15,10 @@ object Application extends Controller {
       sys.error("Sorry! That key doesn't exist")
     }
     
-    Ok( views.html.game(game.get) )
+    val targetPhrase = ("Maybe she's born with it. Maybe it's %.").split("%").toList
+    val availableWords = Array("Horse meat", "Just the tip", "One thousand Slim Jims", "Sexual humiliation").toList
+    
+    Ok( views.html.game(game.get, targetPhrase, availableWords) )
   }
   
   def index = Action {        

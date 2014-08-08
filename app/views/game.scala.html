@@ -1,8 +1,8 @@
 @* game Template File *@
-@(game: AvailableKey)
+@(game: AvailableKey, targetPhrase: List[String], availableWords: List[String])
 
 @main("Play a game!") {
-    <div class="container well-container">
+    <div class="container well-container golf-word-container">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner">
@@ -20,13 +20,49 @@
 
                     <div class="row margin-top">
                         <div class="col-md-7">
-                            stuff
+                         
+                          <div class="word-container">
+                            <ul class="word-list">                            
+                                @for(word <- targetPhrase){
+                                  <li>@word</li>
+                              
+                                  @if(word != targetPhrase.last){
+                                    <li class="word-target"></li>
+                                  }                              
+                                }
+                            </ul>                           
+                         </div>
+                         
+                         <div class="word-options-container">
+                            
+                            <ul class="options-list">
+                                @for(word <- availableWords){
+                                    <li><a href="#">@word</a></li>
+                                }
+                            </ul>
+                            
+                            <form class="own-phrase">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" placeholder="Enter your own pharse..." />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="submit">Play Phrase!</button>
+                                        <button class="btn btn-default" type="reset">Refresh Phrases</button>
+                                    </span>
+                               </div>
+                            </form>
+                            
+                         </div>
+                         
+                         <div class="alert alert-info text-center small-help">
+                            Playing is easy, just click a phrase above or enter your own phrase!
+                         </div>
+                         
                         </div>
                         <div class="col-md-5">
-                            <div class="well text-right">
+                            <div class="info-box alert alert-info text-right">
                                 <h3 class="no-margin">How it works:</h3>
                                 <ul class="game-rules">
-                                    <li>Easy! Complete the phrase with at least two words.</li>
+                                    <li>Easy! Use the cards against humanity to complete the phrase.</li>
                                     <li>We'll calculate the SHA1 of your complete phrase.</li>
                                     <li>If the last character matches the last character in the public key, you win!</li>
                                 </ul>
