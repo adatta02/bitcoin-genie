@@ -3,7 +3,8 @@
 # ~~~~
 
 GET     /                           controllers.Application.index()
-GET     /game/:id                           controllers.Application.game(id: Int)
+GET     /game/:id                   controllers.Application.game(id: Int)
+POST    /get-hash                   controllers.Application.getHash()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

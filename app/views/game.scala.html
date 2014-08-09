@@ -1,5 +1,5 @@
 @* game Template File *@
-@(game: AvailableKey, targetPhrase: List[String], availableWords: List[String])
+@(game: AvailableKey, targetPhrase: List[String], availableWords: List[BaseGamePhrase])
 
 @main("Play a game!") {
     <div class="container well-container golf-word-container">
@@ -27,9 +27,8 @@
                                   <li>@word</li>
                               
                                   @if(word != targetPhrase.last){
-                                    <li class="word-target"></li>
-                                  }
-                                            
+                                    <li data-provide="blank-target" class="word-target"></li>
+                                  }                                           
                                 }
                             </ul>                           
                          </div>
@@ -38,26 +37,29 @@
                             
                             <ul class="options-list">
                                 @for(word <- availableWords){
-                                    <li><a href="#">@word</a></li>
+                                    <li><a data-provide="phrase-target" href="#">@word.phrase</a></li>
                                 }
                             </ul>
                             
-                            <form class="own-phrase">
+                            <form data-provide="own-phrase" class="own-phrase">
                                 <div class="input-group">
-                                    <input class="form-control" type="text" placeholder="Enter your own pharse..." />
+                                    <input name="phrase" class="form-control" type="text" placeholder="Enter your own pharse..." />
                                     <span class="input-group-btn">
                                         <button class="btn btn-primary" type="submit">Play Phrase!</button>
-                                        <button class="btn btn-default" type="reset">Refresh Phrases</button>
+                                        <button class="btn btn-default" type="reset">Get New Phrases</button>
                                     </span>
                                </div>
                             </form>
                             
+                            
+                            <div data-provide="calculated-hash" class="calculated-hash alert alert-warning">
+                                Your hash: 
+                            </div>
+                            
+                            <div data-provide="win-status" class="calculated-hash text-center alert"><h3></h3></div>
+                            
                          </div>
-                         
-                         <div class="alert alert-info text-center small-help">
-                            Playing is easy, just click a phrase above or enter your own phrase!
-                         </div>
-                         
+                                                  
                         </div>
                         <div class="col-md-5">
                             <div class="info-box alert alert-info text-right">
@@ -66,6 +68,7 @@
                                     <li>Easy! Use the cards against humanity to complete the phrase.</li>
                                     <li>We'll calculate the SHA256(SHA256()) of your complete phrase.</li>
                                     <li>If the last character matches the last character in the public key, you win!</li>
+                                    <li><strong>Playing is easy, just click a phrase above or enter your own phrase.</strong></li>
                                 </ul>
                             </div>
                         </div>
@@ -75,4 +78,64 @@
             </div>
         </div>
     </div>
+    
+    <script>
+
+      function getCalculatedHash(){
+        
+        var phrase = [];
+        $(".word-list li").each(function(){            
+            phrase.push( $(this).text() );
+        });
+        
+        $("[data-provide='win-status']").hide();
+        
+        var data = {id: @game.id, phrase: phrase.join(" ")};
+        
+        $.ajax({
+          url: "@routes.Application.getHash",
+          type: "POST",
+          data: JSON.stringify(data),
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          success: function(data){
+            $("[data-provide='calculated-hash']").html("<strong>Your hash:</strong> " + data.calculatedHash).show();            
+            $("[data-provide='win-status']").removeClass("alert-success alert-danger");
+            
+            var textVal = "";
+            
+            if( data.isMatch ){
+              $("[data-provide='win-status']").addClass("alert-success");
+              textVal = "Awesome! That's a winner!";
+            }else{
+              $("[data-provide='win-status']").addClass("alert-danger");
+              textVal = "Womp. No dice.";
+            }
+            
+            $("[data-provide='win-status'] h3").html( textVal );
+            $("[data-provide='win-status']").slideDown();           
+          }
+        });
+          
+      }
+    
+      $(document).ready(function(){
+          
+          $("[data-provide='phrase-target']").click(function(){
+              $("[data-provide='blank-target']").html( $(this).text() );
+              getCalculatedHash();
+              return false;
+          });
+
+          $("[data-provide='own-phrase']").submit(function(){
+              var phrase = $(this).find("[name='phrase']").val();
+              if( phrase.length ){
+                  $("[data-provide='blank-target']").html( phrase );
+                  getCalculatedHash();
+              }
+              return false;
+          });
+          
+      });
+    </script>
 }
