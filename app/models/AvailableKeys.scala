@@ -31,7 +31,7 @@ object AvailableKeys {
   def find(id: Int): Option[AvailableKey] = {
     DB.withConnection(implicit c => {
       SQL("SELECT * FROM available_keys WHERE id = {id} LIMIT 1").on("id" -> id).as(rowParser.singleOpt)
-    })    
+    })
   }
   
   def getAllAvailableKeys: List[AvailableKey] = {
