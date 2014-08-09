@@ -52,11 +52,15 @@
                             </form>
                             
                             
-                            <div data-provide="calculated-hash" class="calculated-hash alert alert-warning">
+                            <div data-provide="calculated-hash" class="padded-alert alert alert-warning">
                                 Your hash: 
                             </div>
                             
-                            <div data-provide="win-status" class="calculated-hash text-center alert"><h3></h3></div>
+                            <div data-provide="win-status" class="padded-alert text-center alert">
+                                
+                            </div>
+                            
+                            
                             
                          </div>
                                                   
@@ -106,13 +110,13 @@
             
             if( data.isMatch ){
               $("[data-provide='win-status']").addClass("alert-success");
-              textVal = "Awesome! That's a winner!";
+              textVal = "<h3>Awesome! That's a winner!</h3><a href='" + data.redeemUrl + "'>Click here to redeem!</a>";
             }else{
               $("[data-provide='win-status']").addClass("alert-danger");
-              textVal = "Womp. No dice.";
+              textVal = "<h3>Womp. No dice.</h3>";
             }
             
-            $("[data-provide='win-status'] h3").html( textVal );
+            $("[data-provide='win-status']").html( textVal );
             $("[data-provide='win-status']").slideDown();           
           }
         });

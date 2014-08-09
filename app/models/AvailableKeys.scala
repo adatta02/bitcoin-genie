@@ -6,7 +6,7 @@ import play.api.db.DB
 import play.api.Play.current
 import scala.collection._
 
-case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String){
+case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String, redeemKey: String){
   def getReadableGame: String = {
     this.game match {
       case "golf" => "Hash Golf"
@@ -20,10 +20,10 @@ case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String
 object AvailableKeys {
   
   def rowParser = {
-    (int("id") ~ str("public_key") ~ get[Double]("amount") ~ str("game"))
+    (int("id") ~ str("public_key") ~ get[Double]("amount") ~ str("game") ~ str("redeem_key"))
     .map(f => {      
       f match {    
-	  	case i~pk~a~g => AvailableKey(i, pk, a, g)
+	  	case i~pk~a~g~k => AvailableKey(i, pk, a, g, k)
       }
     })
   }

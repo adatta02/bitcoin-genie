@@ -23,9 +23,9 @@ import scala.util.Random
 
 object SeedDb {
   
-  def getRandomKey: String = {
+  def getRandomKey(len: Integer): String = {
     val fakeKey = Codecs.toHexString(MessageDigest.getInstance("SHA-256").digest( Random.nextInt.toString.getBytes() ))
-    val finalKey = Range.inclusive(0, 32)
+    val finalKey = Range.inclusive(0, len)
     
     "1" + finalKey.map( a => {
 	    			if( Random.nextInt % 3 == 0 ){
@@ -35,7 +35,7 @@ object SeedDb {
 	    			}
     			  })
     			  .foldLeft("")((collect, element) => {collect.concat(element)})
-  }
+  }  
   
   def seedKeys: Unit = {
 
@@ -47,10 +47,11 @@ object SeedDb {
       
       for(i <- 1 to 50){
                 
-        SQL("INSERT INTO available_keys (public_key, amount, game) VALUES ({key}, {amount}, {game})")
-          .on("key" -> this.getRandomKey, 
+        SQL("INSERT INTO available_keys (public_key, amount, game, redeem_key) VALUES ({key}, {amount}, {game}, {redeemKey})")
+          .on("key" -> this.getRandomKey(31), 
+              "redeemKey" -> this.getRandomKey(12),
               "amount" -> (scala.util.Random.nextDouble * 10).formatted("%.2f"),
-              "game" -> games( scala.util.Random.nextInt(3) )
+              "game" -> games(scala.util.Random.nextInt(3))                         
          ).executeInsert()
          
       }      

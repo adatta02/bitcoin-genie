@@ -14,17 +14,30 @@ object Application extends Controller {
     val jsonResult = request.body match {
 	    case JsObject(fields) => {
 	      val phrase = fields.find(a => a._1 == "phrase").get._2.toString
-	      val hash = GamePhrase.calculatePhraseHash(phrase)
-	      val id = Integer.valueOf(fields.find(a => a._1 == "id").get._2.toString)	      
+	      val id = Integer.valueOf(fields.find(a => a._1 == "id").get._2.toString)
 	      
-	      Json.toJson( Json.obj("error" -> false, "calculatedHash" -> hash, 
-	    		  				"isMatch" -> GamePhrase.doesHashMatch(hash, AvailableKeys.find(id).get)) )
+	      val hash = GamePhrase.calculatePhraseHash(phrase)
+	      val availableGame = AvailableKeys.find(id).get
+	      val isMatch = GamePhrase.doesHashMatch(hash, availableGame)	      
+	      
+	      val redeemUrl = if( isMatch ){
+	        routes.Application.redeem( availableGame.redeemKey ).url
+	      }else{
+	        ""
+	      }
+	      
+	      Json.toJson( Json.obj("error" -> false, "calculatedHash" -> hash, "redeemUrl" -> redeemUrl, "isMatch" -> isMatch) )
 	    }
 	    case _ => Json.toJson( Json.obj("error" -> true, "msg" -> "Sorry! That isn't valid JSON.") )
 	  }
     
     Ok( jsonResult )
   }} 
+  
+  def redeem(key: String) = Action {
+    
+    Ok( views.html.redeem() )
+  }
   
   def game(id: Int) = Action {
     
