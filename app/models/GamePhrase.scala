@@ -45,20 +45,21 @@ object GamePhrase {
     
   }
     
-  def getRandomPhrases: List[BaseGamePhrase] = {
+  def getRandomPhrases: List[Phrase] = {
     DB.withConnection(implicit c => {
       SQL("SELECT * FROM golf_phrase WHERE phrase_type = {type} ORDER BY RAND() LIMIT 4")
       	 .on("type" -> TYPE_PHRASE)
       	 .as(rowParser *)
+      	 .map( a => a.asInstanceOf[Phrase] )
     })    
   }
   
-  def getRandomBlankPhrase: BaseGamePhrase = {
+  def getRandomBlankPhrase: PhraseWithBlank = {
           
     DB.withConnection(implicit c => {
       SQL("SELECT * FROM golf_phrase WHERE phrase_type = {type} ORDER BY RAND() LIMIT 1")
       	 .on("type" -> TYPE_WITH_BLANK_PHRASE)
-      	 .as(rowParser.single)
+      	 .as(rowParser.single).asInstanceOf[PhraseWithBlank]
     })
     
   }
