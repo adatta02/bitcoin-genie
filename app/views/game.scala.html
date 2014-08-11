@@ -1,5 +1,6 @@
 @* game Template File *@
 @(game: AvailableKey, targetPhrase: List[String], availableWords: List[Phrase])
+@import java.math.BigInteger; var len = 0
 
 @main("Play a game!") {
     <div class="container well-container golf-word-container">
@@ -34,10 +35,17 @@
                          </div>
                          
                          <div class="word-options-container">
-                            
+                                                        
                             <ul class="options-list">
                                 @for(word <- availableWords){
                                     <li><a data-provide="phrase-target" href="#">@word.phrase</a></li>
+                                    
+                                    @{len += word.phrase.length}
+                                                                        
+                                    @if(len > 40){
+                                        </ul><ul class="options-list">
+                                        @{len = 0}
+                                    }
                                 }
                             </ul>
                             

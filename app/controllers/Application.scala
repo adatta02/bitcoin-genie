@@ -36,7 +36,12 @@ object Application extends Controller {
   
   def redeem(key: String) = Action {
     
-    Ok( views.html.redeem() )
+    val game = AvailableKeys.findBy( ("redeem_key" -> key) )
+    if( game.isEmpty ){
+      sys.error("Sorry! That key doesn't exist")
+    }    
+        
+    Ok( views.html.redeem(game.get) )
   }
   
   def game(id: Int) = Action {

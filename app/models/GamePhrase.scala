@@ -47,7 +47,7 @@ object GamePhrase {
     
   def getRandomPhrases: List[Phrase] = {
     DB.withConnection(implicit c => {
-      SQL("SELECT * FROM golf_phrase WHERE phrase_type = {type} ORDER BY RAND() LIMIT 4")
+      SQL("SELECT * FROM golf_phrase WHERE phrase_type = {type} ORDER BY RAND() LIMIT 6")
       	 .on("type" -> TYPE_PHRASE)
       	 .as(rowParser *)
       	 .map( a => a.asInstanceOf[Phrase] )

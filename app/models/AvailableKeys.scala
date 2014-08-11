@@ -27,7 +27,18 @@ object AvailableKeys {
       }
     })
   }
+  
+  def findBy(params: Tuple2[String, String]*): Option[AvailableKey] = {
+    val sql = "SELECT * FROM available_keys WHERE " + params.map(a => a._1.concat(" = {" + a._1 + "}" )).mkString(" AND ")
     
+    DB.withConnection(implicit c => {
+      SQL(sql).on( 
+          params.map( a => (a._1, toParameterValue(a._2)) ): _*
+      ).as(rowParser.singleOpt)
+    })
+    
+  }
+  
   def find(id: Int): Option[AvailableKey] = {
     DB.withConnection(implicit c => {
       SQL("SELECT * FROM available_keys WHERE id = {id} LIMIT 1").on("id" -> id).as(rowParser.singleOpt)
