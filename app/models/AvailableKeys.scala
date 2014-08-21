@@ -29,7 +29,7 @@ object AvailableKeys {
   }
   
   def findBy(params: Tuple2[String, String]*): Option[AvailableKey] = {
-    val sql = "SELECT * FROM available_keys WHERE " + params.map(a => a._1.concat(" = {" + a._1 + "}" )).mkString(" AND ")
+    val sql = "SELECT * FROM available_key WHERE " + params.map(a => a._1.concat(" = {" + a._1 + "}" )).mkString(" AND ")
     
     DB.withConnection(implicit c => {
       SQL(sql).on( 
@@ -41,14 +41,14 @@ object AvailableKeys {
   
   def find(id: Int): Option[AvailableKey] = {
     DB.withConnection(implicit c => {
-      SQL("SELECT * FROM available_keys WHERE id = {id} LIMIT 1").on("id" -> id).as(rowParser.singleOpt)
+      SQL("SELECT * FROM available_key WHERE id = {id} LIMIT 1").on("id" -> id).as(rowParser.singleOpt)
     })
   }
   
   def getAllAvailableKeys: List[AvailableKey] = {
     
     DB.withConnection(implicit c => {
-      SQL("SELECT * FROM available_keys ORDER BY id ASC").as(rowParser *).toList
+      SQL("SELECT * FROM available_key ORDER BY id ASC").as(rowParser *).toList
     })
     
   }

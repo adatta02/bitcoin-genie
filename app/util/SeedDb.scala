@@ -41,13 +41,13 @@ object SeedDb {
 
     DB.withConnection(implicit c => {
       
-      SQL("DELETE FROM available_keys").execute
+      SQL("DELETE FROM available_key").execute
       
       val games = Array("golf", "photobooth", "craps")
       
       for(i <- 1 to 50){
                 
-        SQL("INSERT INTO available_keys (public_key, amount, game, redeem_key) VALUES ({key}, {amount}, {game}, {redeemKey})")
+        SQL("INSERT INTO available_key (public_key, amount, game, redeem_key) VALUES ({key}, {amount}, {game}, {redeemKey})")
           .on("key" -> this.getRandomKey(31), 
               "redeemKey" -> this.getRandomKey(12),
               "amount" -> (scala.util.Random.nextDouble * 10).formatted("%.2f"),

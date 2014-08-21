@@ -11,9 +11,11 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   jdbc,
-  anorm
+  anorm  
 )
 
-val appDependencies = Seq( "mysql" % "mysql-connector-java" % "5.1.18" )
+libraryDependencies ++= Seq( "mysql" % "mysql-connector-java" % "5.1.32" )
+
+// val appDependencies = Seq( "mysql" % "mysql-connector-java" % "5.1.32" )
 
 playScalaSettings
