@@ -5,6 +5,7 @@
 GET     /                           controllers.Application.index()
 GET     /game/:id                   controllers.Application.game(id: Int)
 POST    /get-hash                   controllers.Application.getHash()
+GET     /random-phrases             controllers.Application.getRandomPhrases()
 GET     /redeem/:key                controllers.Application.redeem(key: String)
 
 # Map static resources from the /public folder to the /assets URL path

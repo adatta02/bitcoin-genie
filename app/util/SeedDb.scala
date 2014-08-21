@@ -43,7 +43,7 @@ object SeedDb {
       
       SQL("DELETE FROM available_key").execute
       
-      val games = Array("golf", "photobooth", "craps")
+      val games = Array("golf", "photobooth", "dealnodeal")
       
       for(i <- 1 to 50){
                 

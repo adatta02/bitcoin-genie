@@ -12,7 +12,7 @@ case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String
       case "golf" => "Hash Golf"
       case "photobooth" => "Photobooth Fun!"
       case "craps" => "Craps"
-      case _=> "N/A"
+      case _=> "Deal or No Deal"
     }
   }
 }
@@ -20,10 +20,10 @@ case class AvailableKey(id: Int, publicKey: String, amount: Double, game: String
 object AvailableKeys {
   
   def rowParser = {
-    (int("id") ~ str("public_key") ~ get[Double]("amount") ~ str("game") ~ str("redeem_key"))
+    (int("id") ~ str("public_key") ~ get[java.math.BigDecimal]("amount") ~ str("game") ~ str("redeem_key"))
     .map(f => {      
-      f match {    
-	  	case i~pk~a~g~k => AvailableKey(i, pk, a, g, k)
+      f match { 
+	  	case i~pk~a~g~k => AvailableKey(i, pk, a.toString().toDouble, g, k)
       }
     })
   }

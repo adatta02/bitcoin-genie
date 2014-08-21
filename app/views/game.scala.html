@@ -36,18 +36,9 @@
                          
                          <div class="word-options-container">
                                                         
-                            <ul class="options-list">
-                                @for(word <- availableWords){
-                                    <li><a data-provide="phrase-target" href="#">@word.phrase</a></li>
-                                    
-                                    @{len += word.phrase.length}
-                                                                        
-                                    @if(len > 40){
-                                        </ul><ul class="options-list">
-                                        @{len = 0}
-                                    }
-                                }
-                            </ul>
+                            <div data-provide="options-list">
+                                @renderPhrases(availableWords)                            
+                            </div>
                             
                             <form data-provide="own-phrase" class="own-phrase">
                                 <div class="input-group">
@@ -66,9 +57,7 @@
                             
                             <div data-provide="win-status" class="padded-alert text-center alert">
                                 
-                            </div>
-                            
-                            
+                            </div>                                                        
                             
                          </div>
                                                   
@@ -133,10 +122,17 @@
     
       $(document).ready(function(){
           
-          $("[data-provide='phrase-target']").click(function(){
+          $("[data-provide='options-list']").on("click", "[data-provide='phrase-target']", function(){
               $("[data-provide='blank-target']").html( $(this).text() );
               getCalculatedHash();
               return false;
+          });
+
+          $("[data-provide='own-phrase'] button[type='reset']").click(function(){
+            $.get("@routes.Application.getRandomPhrases", function(html){
+                $("[data-provide='options-list']").html( html );
+            }); 
+            return false;
           });
 
           $("[data-provide='own-phrase']").submit(function(){

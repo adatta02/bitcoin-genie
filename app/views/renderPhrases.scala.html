@@ -1,0 +1,16 @@
+@* renderPhrases Template File *@
+@(availableWords: List[Phrase])
+@import java.math.BigInteger; var len = 0
+
+<ul class="options-list">
+@for(word <- availableWords){
+    <li><a data-provide="phrase-target" href="#">@word.phrase</a></li>
+    
+    @{len += word.phrase.length}
+                                        
+    @if(len > 40){
+        </ul><ul class="options-list">
+        @{len = 0}
+    }
+}
+</ul>

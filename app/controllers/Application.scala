@@ -2,12 +2,47 @@ package controllers
 
 import models._
 import anorm._
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, Controller, Result}
 import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.json._
 
-object Application extends Controller {
+object Application extends Controller {  
+  
+  
+  def redeem(key: String) = Action {
+    
+    val game = AvailableKeys.findBy( ("redeem_key" -> key) )
+    if( game.isEmpty ){
+      sys.error("Sorry! That key doesn't exist")
+    }    
+        
+    Ok( views.html.redeem(game.get) )
+  }
+    
+  def game(id: Int) = Action {
+    
+    val game = AvailableKeys.find(id)    
+    if( game.isEmpty ){
+      sys.error("Sorry! That key doesn't exist")
+    }
+    
+    val viewResult = game.get.game match {
+      case "golf" => playGolf(game.get)
+      case _ => sys.error("Unrecognized game!")
+    }
+    
+    viewResult
+  }
+  
+  def index = Action {                
+    val availableKeys = AvailableKeys.getAllAvailableKeys    
+    Ok( views.html.index(availableKeys) )
+  }  
+  
+  def getRandomPhrases() = Action {
+    Ok( views.html.renderPhrases(GamePhrase.getRandomPhrases) )
+  }
   
   def getHash = Action(parse.json) {request => {
     
@@ -32,25 +67,9 @@ object Application extends Controller {
 	  }
     
     Ok( jsonResult )
-  }} 
+  }}   
   
-  def redeem(key: String) = Action {
-    
-    val game = AvailableKeys.findBy( ("redeem_key" -> key) )
-    if( game.isEmpty ){
-      sys.error("Sorry! That key doesn't exist")
-    }    
-        
-    Ok( views.html.redeem(game.get) )
-  }
-  
-  def game(id: Int) = Action {
-    
-    val game = AvailableKeys.find(id)    
-    if( game.isEmpty ){
-      sys.error("Sorry! That key doesn't exist")
-    }
-    
+  def playGolf(game: AvailableKey): Result = {
     val availableWords = GamePhrase.getRandomPhrases
     val gamePhrase = GamePhrase.getRandomBlankPhrase
     
@@ -60,15 +79,9 @@ object Application extends Controller {
       }else{
         gamePhrase.phrase.split("%").toList  
 	  }
-    }    
+    }
     
-    Ok( views.html.game(game.get, targetPhrase, availableWords) )
+    Ok( views.html.game(game, targetPhrase, availableWords) )
   }
-  
-  def index = Action {                
-    val availableKeys = AvailableKeys.getAllAvailableKeys
     
-    Ok( views.html.index(availableKeys) )
-  }
-  
 }
