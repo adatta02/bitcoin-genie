@@ -29,6 +29,7 @@ object Application extends Controller {
     
     val viewResult = game.get.game match {
       case "golf" => playGolf(game.get)
+      case "dealnodeal" => playDealOrNoDeal(game.get)
       case _ => sys.error("Unrecognized game!")
     }
     
@@ -39,6 +40,14 @@ object Application extends Controller {
     val availableKeys = AvailableKeys.getAllAvailableKeys    
     Ok( views.html.index(availableKeys) )
   }  
+  
+  def playDealOrNoDeal(game: AvailableKey): Result = {        
+    
+    val gameBoard = DealOrNoDeal.getNewBoard    
+    val jsonString = Json.toJson(gameBoard)
+    // Ok( views.html.dealornodeal(game) )
+    Ok( jsonString )
+  }
   
   def getRandomPhrases() = Action {
     Ok( views.html.renderPhrases(GamePhrase.getRandomPhrases) )

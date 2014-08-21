@@ -1,0 +1,37 @@
+@* dealornodeal Template File *@
+@(game: AvailableKey)
+
+@main("Play a game!") {
+    <div class="container well-container golf-word-container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="inner">
+                    
+                    <div class="row">
+                        <div class="col-md-12">                    
+                            <div class="pull-left">
+                               <h2>@game.getReadableGame at @game.publicKey</h2>
+                           </div>
+                       </div>
+                   </div>
+                   
+                    <div class="row margin-top">
+                        <div class="col-md-7">
+
+                        </div>
+                   
+                        <div class="col-md-5">
+                            <div class="info-box alert alert-info text-right">
+                                <h3 class="no-margin">How it works:</h3>
+                                <ul class="game-rules">
+                                    <li>It's classic <a href="http://en.wikipedia.org/wiki/Deal_or_No_Deal" target="_blank">Deal or No Deal!</a></li>
+                                    <li>The 26 briefcases on the board have between 1 and 1000000 Satoshis in them</li>                                                                    
+                                </ul>
+                            </div>
+                        </div>                                                         
+                  </div>                  
+           </div>
+       </div>
+   </div>
+</div>
+}
