@@ -7,11 +7,57 @@ import play.api.Play.current
 import scala.collection._
 import scala.util.Random
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case class DealOrNoDealBoard(pos: Int, isPlayed: Boolean, amount: Double)
+case class DealOrNoDealBox(pos: Int, isPlayed: Boolean, amount: Double)
+
+object DealOrNoDealBox {
+  implicit def boxToJson = Json.format[DealOrNoDealBox]
+}
 
 object DealOrNoDealBoard {
-  implicit def boardToJson = Json.format[DealOrNoDealBoard]
+    
+  implicit def boardToJson = new Writes[DealOrNoDealBoard] {
+    def writes(board: DealOrNoDealBoard) = { 
+      Json.obj("currentOffer" -> board.currentOffer, 
+    		   "boxes" -> Json.toJson(board.boxes), 
+    		   "pastOffers" -> Json.toJson(board.pastOffers))
+    }
+  }  
+  
+  implicit val jsonToBoard: Reads[DealOrNoDealBoard] = (
+     (__ \"boxes").read[ List[DealOrNoDealBox] ] 
+     and (__ \ "currentOffer").read[Double]
+     and (__ \ "selectedBox").read[Option[Int]]     
+     and (__ \"pastOffers").read[List[Double]]      
+  )(DealOrNoDealBoard.apply _)
+  
+}
+
+case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Double, selectedBox: Option[Int], pastOffers: List[Double]) {
+  
+  def getJsonForView: JsValue = {
+    val boxes = Json.toJson( this )
+    				.\("boxes").as[ Seq[JsObject] ]
+    				.map(a => {a ++ Json.obj( "amount" -> "" )})
+    				
+    val amountList = this.boxes.sortBy(el => el.amount)
+    amountList.map(a => {      
+      val isPlayed = if ( this.selectedBox.isDefined && a.pos == this.selectedBox.get ) {
+        false
+      }else{
+        a.isPlayed
+      }
+      
+      Json.obj( "amount" -> a.amount, "available" -> a.isPlayed ) 
+    })
+    
+    Json.obj( "boxes" -> boxes,
+    		  "selectedBox" -> this.selectedBox,
+    		  "amounts" -> amountList,
+    		  "currentOffer" -> this.currentOffer )    
+  }
+  
 }
 
 object DealOrNoDeal {  
@@ -21,10 +67,12 @@ object DealOrNoDeal {
 		  					   50000, 75000, 100000, 200000, 300000, 400000, 
 		  					   500000, 750000, 1000000)
   
-  def getNewBoard(): List[DealOrNoDealBoard] = {    
-    Random.shuffle(availableAmounts)
-    	  .zipWithIndex
-    	  .map( {case(amount, pos) => DealOrNoDealBoard(pos, false, amount)} )
+  
+  def getNewBoard(): DealOrNoDealBoard = {    
+    val boxes = Random.shuffle(availableAmounts).zipWithIndex
+    				  .map( {case(amount, pos) => DealOrNoDealBox(pos, false, amount)} )
+    				  
+    DealOrNoDealBoard(boxes, 0, None, List())
   }
   
 }

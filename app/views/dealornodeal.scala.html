@@ -1,8 +1,8 @@
 @* dealornodeal Template File *@
-@(game: AvailableKey)
+@(game: AvailableKey, dealBoard: play.api.libs.json.JsValue)
 
 @main("Play a game!") {
-    <div class="container well-container golf-word-container">
+    <div class="container well-container deal-nodeal-container">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner">
@@ -15,12 +15,17 @@
                        </div>
                    </div>
                    
+                   <div class="row margin-top">                   
+                        <div id="boardTarget"></div>                   
+                   </div>
+                   
                     <div class="row margin-top">
-                        <div class="col-md-7">
+                    
+                        <div class="col-md-9">
 
                         </div>
                    
-                        <div class="col-md-5">
+                        <div class="col-md-3">
                             <div class="info-box alert alert-info text-right">
                                 <h3 class="no-margin">How it works:</h3>
                                 <ul class="game-rules">
@@ -34,4 +39,90 @@
        </div>
    </div>
 </div>
+
+<script type="text/template" id="boardTemplate">
+<div class="col-md-2 amount-container">
+    <div class="inner">
+        <ul>
+            <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
+                <li class="<% !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+            <% } %>
+        </ul>
+    </div>
+
+    <div class="your-case">
+        <h3>Your Case</h3>
+        <div class="case">
+            <span><%= board.selectedBox ? board.selectedBox : "?" %></span> 
+        </div>            
+    </div>
+
+</div>
+<div class="col-md-8 game-container">
+
+    <div data-provide="game-status" class="alert alert-info text-center">
+        <%= status %>
+    </div>    
+
+    <% for(var i = 0; i < 4; i++ ){ %>
+        <ul class="board-row">
+            <% for(var j = rows[i][0]; j <= rows[i][rows[i].length-1]; j++){ %>
+                <li>
+                    <a data-provide="briefcase" href="#<%= j %>" class="briefcase"><%= j %></a>
+                </li>
+            <% } %>
+        </ul>
+    <% } %>
+</div>
+<div class="col-md-2 amount-container">
+    <div class="inner">
+        <ul>
+            <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>
+                <li class="<% !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+            <% } %>            
+        </ul>
+    </div>                        
+</div>
+
+</script>
+
+<script>
+$(document).ready(function(){
+  var board = @Html(dealBoard.toString)  
+  var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
+  var template = _.template( $("#boardTemplate").html() );
+    
+  function setGameStatus( status ){
+    $("#boardTarget [data-provide='game-status']").html( status );
+  }
+    
+  $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
+        
+    var pos = $(this).attr("href").replace("#", "");
+    
+    if( !board.selectedBox ){
+        
+        var data = {action: "selectCase", pos: pos};
+        
+        $.ajax({
+          url: "@routes.Application.playDeal(game.id)",
+          type: "POST",
+          data: JSON.stringify(data),
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          success: function(data){
+            
+          }
+       });        
+                     
+    }
+    
+    return false;
+  });
+    
+  $("#boardTarget").html( template({board: board, rows: rows, status: "You need to pick 'your case' to start off!"}) );
+  
+});
+</script>
+
 }

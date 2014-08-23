@@ -22,7 +22,7 @@ object Application extends Controller {
     
   def game(id: Int) = Action {
     
-    val game = AvailableKeys.find(id)    
+    val game = AvailableKeys.find(id)
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }
@@ -42,12 +42,24 @@ object Application extends Controller {
   }  
   
   def playDealOrNoDeal(game: AvailableKey): Result = {        
+        
+    val dealBoard = game.getDealOrNoDealBoard
+    val htmlJson = dealBoard.getJsonForView
     
-    val gameBoard = DealOrNoDeal.getNewBoard    
-    val jsonString = Json.toJson(gameBoard)
-    // Ok( views.html.dealornodeal(game) )
-    Ok( jsonString )
+    Ok( views.html.dealornodeal(game, htmlJson) )  
   }
+  
+  def playDeal(id: Int) = Action(parse.json) {request => {
+    
+    val game = AvailableKeys.find(id)
+    
+    val result = request.body.\("action").toString match {
+      case "selectCase" => 
+      case _ => sys.error("Unrecognized action")
+    }
+    
+    Ok( Json.obj("isError" -> false) )
+  }}
   
   def getRandomPhrases() = Action {
     Ok( views.html.renderPhrases(GamePhrase.getRandomPhrases) )
