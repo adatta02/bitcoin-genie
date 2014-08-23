@@ -19,7 +19,8 @@ object DealOrNoDealBoard {
     
   implicit def boardToJson = new Writes[DealOrNoDealBoard] {
     def writes(board: DealOrNoDealBoard) = { 
-      Json.obj("currentOffer" -> board.currentOffer, 
+      Json.obj("currentOffer" -> board.currentOffer,
+    		   "selectedBox" -> board.selectedBox,
     		   "boxes" -> Json.toJson(board.boxes), 
     		   "pastOffers" -> Json.toJson(board.pastOffers))
     }
@@ -27,14 +28,14 @@ object DealOrNoDealBoard {
   
   implicit val jsonToBoard: Reads[DealOrNoDealBoard] = (
      (__ \"boxes").read[ List[DealOrNoDealBox] ] 
-     and (__ \ "currentOffer").read[Double]
+     and (__ \ "currentOffer").read[Option[Double]]
      and (__ \ "selectedBox").read[Option[Int]]     
      and (__ \"pastOffers").read[List[Double]]      
   )(DealOrNoDealBoard.apply _)
   
 }
 
-case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Double, selectedBox: Option[Int], pastOffers: List[Double]) {
+case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[Double], selectedBox: Option[Int], pastOffers: List[Double]) {
   
   def getJsonForView: JsValue = {
     val boxes = Json.toJson( this )
@@ -72,7 +73,7 @@ object DealOrNoDeal {
     val boxes = Random.shuffle(availableAmounts).zipWithIndex
     				  .map( {case(amount, pos) => DealOrNoDealBox(pos, false, amount)} )
     				  
-    DealOrNoDealBoard(boxes, 0, None, List())
+    DealOrNoDealBoard(boxes, None, None, List())
   }
   
 }

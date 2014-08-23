@@ -54,10 +54,18 @@ object AvailableKeys {
     })
   }
   
-  def getAllAvailableKeys: List[AvailableKey] = {
-    
+  def getAllAvailableKeys: List[AvailableKey] = {    
     DB.withConnection(implicit c => {
       SQL("SELECT * FROM available_key ORDER BY id ASC").as(rowParser *).toList
+    })    
+  }
+  
+  def update(game: AvailableKey, params: Tuple2[String, String]*): Unit = {
+    val sql = "UPDATE available_key SET " + params.map(a => {a._1 + " = " + "{" + a._1 + "}"}).mkString(", ") + " WHERE id = {id}"
+    val idParams = params ++ Seq( ("id" -> game.id) )
+    
+    DB.withConnection(implicit c => {
+      SQL(sql).on( idParams.map( a => (a._1, toParameterValue(a._2)) ): _* ).executeUpdate
     })
     
   }

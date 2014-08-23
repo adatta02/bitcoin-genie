@@ -51,12 +51,19 @@ object Application extends Controller {
   
   def playDeal(id: Int) = Action(parse.json) {request => {
     
-    val game = AvailableKeys.find(id)
+    val game = AvailableKeys.find(id).get
+    val dealBoard = game.getDealOrNoDealBoard    
     
-    val result = request.body.\("action").toString match {
-      case "selectCase" => 
+    val result = request.body.\("action").as[String] match {
+      
+      case "selectCase" => {
+        val pos = request.body.\("pos").asOpt[Int]
+        val updatedBoard = DealOrNoDealBoard(dealBoard.boxes, dealBoard.currentOffer, pos, dealBoard.pastOffers)
+        AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
+      }
+      
       case _ => sys.error("Unrecognized action")
-    }
+    }    
     
     Ok( Json.obj("isError" -> false) )
   }}
