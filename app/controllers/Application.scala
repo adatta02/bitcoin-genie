@@ -59,13 +59,16 @@ object Application extends Controller {
       case "selectCase" => {
         val pos = request.body.\("pos").asOpt[Int]
         val updatedBoard = DealOrNoDealBoard(dealBoard.boxes, dealBoard.currentOffer, pos, dealBoard.pastOffers)
+        
         AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
+        			 .getDealOrNoDealBoard
+        			 .getJsonForView
       }
       
       case _ => sys.error("Unrecognized action")
     }    
     
-    Ok( Json.obj("isError" -> false) )
+    Ok( Json.toJson(result) )
   }}
   
   def getRandomPhrases() = Action {

@@ -60,14 +60,15 @@ object AvailableKeys {
     })    
   }
   
-  def update(game: AvailableKey, params: Tuple2[String, String]*): Unit = {
+  def update(game: AvailableKey, params: Tuple2[String, String]*): AvailableKey = {
     val sql = "UPDATE available_key SET " + params.map(a => {a._1 + " = " + "{" + a._1 + "}"}).mkString(", ") + " WHERE id = {id}"
     val idParams = params ++ Seq( ("id" -> game.id) )
     
     DB.withConnection(implicit c => {
       SQL(sql).on( idParams.map( a => (a._1, toParameterValue(a._2)) ): _* ).executeUpdate
     })
-    
+   
+    this.find( game.id ).get
   }
   
 }

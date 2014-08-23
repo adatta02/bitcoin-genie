@@ -96,11 +96,15 @@ $(document).ready(function(){
     $("#boardTarget [data-provide='game-status']").html( status );
   }
     
+  function renderBoard(status){
+    $("#boardTarget").html( template({board: board, rows: rows, status: status}) );
+  }
+    
   $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
         
     var pos = $(this).attr("href").replace("#", "");
     
-    if( !board.selectedBox ){
+    if( true || !board.selectedBox ){
         
         var data = {action: "selectCase", pos: parseInt(pos)};
         
@@ -111,16 +115,17 @@ $(document).ready(function(){
           contentType: "application/json; charset=utf-8",
           dataType: "json",
           success: function(data){
-            
+            board = data;
+            renderBoard("Great! Now select 5 cases.");
           }
        });        
                      
     }
     
     return false;
-  });
-    
-  $("#boardTarget").html( template({board: board, rows: rows, status: "You need to pick 'your case' to start off!"}) );
+  });      
+  
+  renderBoard("You need to pick 'your case' to start off!");
   
 });
 </script>
