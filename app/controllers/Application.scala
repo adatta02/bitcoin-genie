@@ -57,12 +57,21 @@ object Application extends Controller {
     val result = request.body.\("action").as[String] match {
       
       case "selectCase" => {
-        val pos = request.body.\("pos").asOpt[Int]
-        val updatedBoard = DealOrNoDealBoard(dealBoard.boxes, dealBoard.currentOffer, pos, dealBoard.pastOffers)
+        val pos = request.body.\("pos").asOpt[Int].get
+        val updatedBoard = dealBoard.seletBox(pos)
         
         AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
         			 .getDealOrNoDealBoard
         			 .getJsonForView
+      }
+      
+      case "openBox" => {
+        val pos = request.body.\("pos").asOpt[Int].get
+        val updatedBoard = dealBoard.openBox(pos)
+
+        AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
+        			 .getDealOrNoDealBoard
+        			 .getJsonForView        
       }
       
       case _ => sys.error("Unrecognized action")

@@ -45,7 +45,7 @@
     <div class="inner">
         <ul>
             <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
-                <li class="<% !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+                <li class="<%= !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
             <% } %>
         </ul>
     </div>
@@ -67,8 +67,8 @@
     <% for(var i = 0; i < 4; i++ ){ %>
         <ul class="board-row">
             <% for(var j = rows[i][0]; j <= rows[i][rows[i].length-1]; j++){ %>
-                <li>
-                    <a data-provide="briefcase" href="#<%= j %>" class="briefcase"><%= j %></a>
+                <li class="<%= window.getBoxAtPos(j-1).isPlayed ? "taken" : "" %>">
+                    <a data-provide="briefcase" href="#<%= (j-1) %>" class="briefcase"><%= j %></a>
                 </li>
             <% } %>
         </ul>
@@ -77,8 +77,8 @@
 <div class="col-md-2 amount-container">
     <div class="inner">
         <ul>
-            <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>
-                <li class="<% !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+            <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>                
+                <li class="<%= !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
             <% } %>            
         </ul>
     </div>                        
@@ -87,10 +87,31 @@
 </script>
 
 <script>
-$(document).ready(function(){
-  var board = @Html(dealBoard.toString)  
+
+var board = @Html(dealBoard.toString);
+
+function getBoxAtPos(position){
+    return _.findWhere(board.boxes, {pos: position});
+}
+
+$(document).ready(function(){   
   var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
   var template = _.template( $("#boardTemplate").html() );
+    
+  function fetchJson( payload, url ){
+  
+     if( !url ){
+       url = "@routes.Application.playDeal(game.id)"
+     }
+  
+    return $.ajax({
+              url: url,
+              type: "POST",
+              data: JSON.stringify(payload),
+              contentType: "application/json; charset=utf-8",
+              dataType: "json",      
+    });
+  }
     
   function setGameStatus( status ){
     $("#boardTarget [data-provide='game-status']").html( status );
@@ -104,28 +125,26 @@ $(document).ready(function(){
         
     var pos = $(this).attr("href").replace("#", "");
     
-    if( true || !board.selectedBox ){
-        
-        var data = {action: "selectCase", pos: parseInt(pos)};
-        
-        $.ajax({
-          url: "@routes.Application.playDeal(game.id)",
-          type: "POST",
-          data: JSON.stringify(data),
-          contentType: "application/json; charset=utf-8",
-          dataType: "json",
-          success: function(data){
+    if( !board.selectedBox ){ 
+        fetchJson( {action: "selectCase", pos: parseInt(pos)} ).success(function(data){
             board = data;
-            renderBoard("Great! Now select 5 cases.");
-          }
-       });        
-                     
+            renderBoard("Awesome. Just " + board.boxesToPick + " more.");        
+        });                            
+    }else{
+        fetchJson( {action: "openBox", pos: parseInt(pos)} ).success(function(data){
+            board = data;
+            renderBoard("Great! Now select " + board.boxesToPick + " cases.");        
+        });                                
     }
     
     return false;
   });      
   
-  renderBoard("You need to pick 'your case' to start off!");
+  if( !board.selectedBox ){
+    renderBoard("You need to pick 'your case' to start off!");
+  }else{
+    renderBoard("Awesome. Just " + board.boxesToPick + " more to pick.");
+  }
   
 });
 </script>
