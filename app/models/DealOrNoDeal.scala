@@ -30,7 +30,7 @@ import play.api.libs.functional.syntax._
 == Final case reveal ==
  */
 
-case class DealOrNoDealBox(pos: Int, isPlayed: Boolean, amount: Double) 
+case class DealOrNoDealBox(pos: Int, isPlayed: Boolean, amount: Double, playIndex: Option[Int]) 
 
 object DealOrNoDealBox {
   implicit def boxToJson = Json.format[DealOrNoDealBox]
@@ -40,7 +40,7 @@ object DealOrNoDealBoard {
     
   implicit def boardToJson = new Writes[DealOrNoDealBoard] {
     def writes(board: DealOrNoDealBoard) = { 
-      Json.obj("currentOffer" -> board.currentOffer,
+      Json.obj("currentOffer" -> board.getBankerOffer,
     		   "selectedBox" -> board.selectedBox,
     		   "boxes" -> Json.toJson(board.boxes), 
     		   "pastOffers" -> Json.toJson(board.pastOffers))
@@ -68,16 +68,26 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     updatedBox.openBox(pos)
   }
   
-  def openBox(pos: Int): DealOrNoDealBoard = {    
+  def openBox(pos: Int): DealOrNoDealBoard = {
+    val numPlayed = this.boxes.filter(a => a.isPlayed).length
+    
     val newBoxes = this.boxes.map(a => {
       if( a.pos == pos ){
-        DealOrNoDealBox( a.pos, true, a.amount )
+        DealOrNoDealBox( a.pos, true, a.amount, Option[Int](numPlayed) )
       }else{
         a
       }
     })
     
-    DealOrNoDealBoard(newBoxes, this.currentOffer, this.selectedBox, this.pastOffers)
+    val updatedBoard = DealOrNoDealBoard(newBoxes, this.getBankerOffer, this.selectedBox, this.pastOffers)
+    val finalBoard = if( updatedBoard.getBankerOffer.isDefined ){      
+      DealOrNoDealBoard(newBoxes, updatedBoard.getBankerOffer, updatedBoard.selectedBox, 
+    		  			updatedBoard.pastOffers ::: List(updatedBoard.getBankerOffer.get))
+    }else{
+      updatedBoard
+    }
+    
+    finalBoard
   }
   
   def getJsonForView: JsValue = {
@@ -97,8 +107,37 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     Json.obj( "boxes" -> boxes,
     		  "amounts" -> amountList,
     		  "selectedBox" -> this.selectedBox,    		  
-    		  "currentOffer" -> this.currentOffer,
-    		  "boxesToPick" -> this.getBoxesToPick )    
+    		  "currentOffer" -> this.getBankerOffer,
+    		  "boxesToPick" -> this.getBoxesToPick,
+    		  "lastAmount" -> this.getLastAmount )    
+  }
+  
+  def getLastAmount: Option[Double] = {
+    val playedBoxes = this.boxes.filter(a => a.isPlayed).sortBy( a => a.playIndex )
+    
+    if( playedBoxes.length > 0 ){
+      Option[Double](playedBoxes.last.amount)
+    }else{
+      None
+    }
+  }
+  
+  def getBankerOffer: Option[Double] = {
+        
+    val numAvailable = this.boxes.filter(a => !a.isPlayed).length
+    
+    if( List(20, 15, 11, 8, 6).contains(numAvailable) || ( numAvailable <= 6 && numAvailable >= 2 ) ){
+      
+      val offer = this.boxes.filter(a => !a.isPlayed)
+        .foldLeft(0.0)((total, el) => {
+          total + ( el.amount * (1.0 / numAvailable.toDouble) )
+      })      
+     
+      Option[Double]( offer.formatted("%.2f").toDouble )
+    }else{
+      None
+    }
+    
   }
   
   def getBoxesToPick: Int = {
@@ -120,9 +159,6 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
       -1
     }
     
-    println( numAvailable )
-    println( num )
-    
     num
   }
   
@@ -138,7 +174,7 @@ object DealOrNoDeal {
   
   def getNewBoard(): DealOrNoDealBoard = {    
     val boxes = Random.shuffle(availableAmounts).zipWithIndex
-    				  .map( {case(amount, pos) => DealOrNoDealBox(pos, false, amount)} )
+    				  .map( {case(amount, pos) => DealOrNoDealBox(pos, false, amount, None)} )
     				  
     DealOrNoDealBoard(boxes, None, None, List())
   }

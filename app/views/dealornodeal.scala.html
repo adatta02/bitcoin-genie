@@ -60,19 +60,34 @@
 </div>
 <div class="col-md-8 game-container">
 
-    <div data-provide="game-status" class="alert alert-info text-center">
-        <%= status %>
-    </div>    
-
     <% for(var i = 0; i < 4; i++ ){ %>
         <ul class="board-row">
             <% for(var j = rows[i][0]; j <= rows[i][rows[i].length-1]; j++){ %>
                 <li class="<%= window.getBoxAtPos(j-1).isPlayed ? "taken" : "" %>">
-                    <a data-provide="briefcase" href="#<%= (j-1) %>" class="briefcase"><%= j %></a>
+                    <a class="briefcase" data-provide="briefcase" href="#<%= (j-1) %>"
+                      <%= window.getBoxAtPos(j-1).isPlayed ? " data-isplayed=\"true\" " : "" %>>
+                        <%= j %>
+                    </a>
                 </li>
             <% } %>
         </ul>
     <% } %>
+
+    <div class="row game-info-row">
+        <div class="col-md-7">
+            <div data-provide="game-status" class="game-status alert alert-info">
+                <%= status %>
+            </div>    
+        </div>
+        <div class="col-md-5">
+            <% if( board.lastAmount ){ %>
+                <div class="last-amount">
+                    Last Case: <%= board.lastAmount %>
+                </div>
+            <% } %>
+        </div>
+    </div>    
+
 </div>
 <div class="col-md-2 amount-container">
     <div class="inner">
@@ -86,6 +101,47 @@
 
 </script>
 
+<div class="modal fade" id="bankerModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">        
+        <h4 class="modal-title">An offer from the banker!</h4>
+      </div>
+      
+      <div class="modal-body">
+        <div data-provide="banker-info" class="alert alert-success text-center banker-info">
+            The banker is contacting you with an offer. <br /> 
+            His offer is based on the remaining cases and your performance so far. 
+        </div>
+        <div data-provide="banker-target"></div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Nope, No deal</button>
+        <button type="button" class="btn btn-success">OK, I'll take the deal!</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script type="text/template" id="bankerTemplate">
+<div class="row">
+
+  <div class="col-md-7">
+    <div class="text-center banker-offer-container">
+        <h3>Your offer is:</h3>
+        <div class="banker-offer-amount"><%= board.currentOffer %></div>
+    </div>
+   </div>
+  <div class="col-md-5">
+    <h4>Previous Offers:</h4>
+    
+  </div>
+</div>
+</script>
+
 <script>
 
 var board = @Html(dealBoard.toString);
@@ -94,46 +150,77 @@ function getBoxAtPos(position){
     return _.findWhere(board.boxes, {pos: position});
 }
 
-$(document).ready(function(){   
-  var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
-  var template = _.template( $("#boardTemplate").html() );
-    
-  function fetchJson( payload, url ){
-  
+function fetchJson( payload, url ){
+
      if( !url ){
        url = "@routes.Application.playDeal(game.id)"
      }
-  
-    return $.ajax({
-              url: url,
-              type: "POST",
-              data: JSON.stringify(payload),
-              contentType: "application/json; charset=utf-8",
-              dataType: "json",      
+
+    return $.ajax({url: url, type: "POST",
+                  data: JSON.stringify(payload), 
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",      
     });
-  }
-    
-  function setGameStatus( status ){
+}
+
+function setGameStatus( status ){
     $("#boardTarget [data-provide='game-status']").html( status );
-  }
+}
+
+function renderBoard(status){
+    var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
+    var template = _.template( $("#boardTemplate").html() );
     
-  function renderBoard(status){
     $("#boardTarget").html( template({board: board, rows: rows, status: status}) );
-  }
+}
+
+function showBankerOffer(){
+
+    var bankerTemplate = _.template( $("#bankerTemplate").html() );
     
+    $("#bankerModal .modal-footer button").addClass("hidden");
+    $("#bankerModal .banker-info").removeClass("hidden");    
+    $("#bankerModal [data-provide='banker-target']").html("");
+    
+    $("#bankerModal").modal({keyboard: false});
+    
+    $("#bankerModal").on("shown.bs.modal", function(){
+    
+        window.setTimeout(function(){
+            $("#bankerModal .modal-footer button").removeClass("hidden");
+            $("#bankerModal .banker-info").addClass("hidden");            
+            $("#bankerModal [data-provide='banker-target']").html( bankerTemplate() );
+        }, 3000);
+    
+        $("#bankerModal").off("shown.bs.modal");    
+    });
+    
+}
+
+$(document).ready(function(){      
+        
   $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
+        
+    if( $(this).data("isplayed") ){
+        alert("Sorry! That case has already been played.");   
+        return false;    
+    }
         
     var pos = $(this).attr("href").replace("#", "");
     
     if( !board.selectedBox ){ 
         fetchJson( {action: "selectCase", pos: parseInt(pos)} ).success(function(data){
             board = data;
-            renderBoard("Awesome. Just " + board.boxesToPick + " more.");        
+            renderBoard("Awesome. Just " + board.boxesToPick + " more.");            
         });                            
     }else{
         fetchJson( {action: "openBox", pos: parseInt(pos)} ).success(function(data){
             board = data;
-            renderBoard("Great! Now select " + board.boxesToPick + " cases.");        
+            renderBoard("Great! Now select " + board.boxesToPick + " cases.");
+            
+            if( board.currentOffer ){
+                showBankerOffer();            
+            }                    
         });                                
     }
     
