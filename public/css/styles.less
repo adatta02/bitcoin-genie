@@ -115,7 +115,11 @@
 }
 
 .deal-nodeal-container {
-
+    
+    .game-container {
+      position: relative;
+    }
+    
     .game-status, .banker-info {
        font-size: 20px;
     }
@@ -199,9 +203,10 @@
       text-align: center;
       
       li.taken {
-        text-decoration: line-through;
-        opacity: .3;
-      }
+        /* text-decoration: line-through;
+        opacity: .3; */
+        display: none;
+      }            
       
       li {
         background-image: url("../images/briefcase.png");
@@ -212,6 +217,20 @@
         display: inline-block;
         text-align: center;
         margin-right: 10px;
+        
+        .case-amount {
+            font-size: 28px;
+            color: #ffd000;
+            background-color: #000;
+            padding: 10px;
+            text-align: center;            
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: 40px;
+            margin-right: 40px;
+            border-radius: 5px;
+            position: relative;
+        }
         
         a {
             font-size: 20px;

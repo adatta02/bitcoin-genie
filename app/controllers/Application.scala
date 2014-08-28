@@ -77,7 +77,7 @@ object Application extends Controller {
       
       case "selectCase" => {
         val pos = request.body.\("pos").asOpt[Int].get
-        dealBoard.seletBox(pos)        
+        dealBoard.seletBox(pos)
       }
       
       case "openBox" => {

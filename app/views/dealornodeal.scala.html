@@ -68,6 +68,7 @@
                       <%= window.getBoxAtPos(j-1).isPlayed ? " data-isplayed=\"true\" " : "" %>>
                         <%= j %>
                     </a>
+                    <div class="case-amount hidden"></div>
                 </li>
             <% } %>
         </ul>
@@ -178,7 +179,11 @@
    </div>
   <div class="col-md-5">
     <h4>Previous Offers:</h4>
-    
+    <ul class="list-unstyled">
+        <% _.each(board.pastOffers, function(val){ %>
+            <li><%= val %></li>
+        <% }); %>
+    </ul>
   </div>
 </div>
 </script>
@@ -265,7 +270,7 @@ $(document).ready(function(){
   updateBoard();
   
   $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
-        
+    
     if( $(this).data("isplayed") ){
         alert("Sorry! That case has already been played.");   
         return false;    
@@ -279,10 +284,33 @@ $(document).ready(function(){
             updateBoard();            
         });                            
     }else{
-        fetchJson( {action: "openBox", pos: parseInt(pos)} ).success(function(data){
+        var fetchDf = fetchJson( {action: "openBox", pos: parseInt(pos)} ).done(function(data){ 
             board = data;
-            updateBoard();
-        });                                
+        });
+        
+        var li = $(this).parents("li:first");
+        var offset = $(li).offset();
+        var parentOffset = $(li).parents(".board-row:first").offset();
+        var width = ($(".game-container").width() - 300) / 2;
+        
+        $('<div class="modal-backdrop fade in" />').appendTo( $("body") );    
+        $(li).find("a").remove();
+        $(li).css({position: "absolute", left: offset.left - parentOffset.left, top: offset.top - parentOffset.top, "z-index": 1045});
+        
+        var animateDf = $.Deferred(); 
+        
+        $.when(fetchDf, animateDf).then(function(){
+            $(li).find(".case-amount").html( board.lastAmount ).removeClass("hidden");
+            
+            window.setTimeout(function(){
+                $(".modal-backdrop").remove();
+                updateBoard();
+            }, 3000);
+                                
+        });
+        
+        $(li).animate({"width": "300", "height": "300", left: width}, function(){animateDf.resolve();});
+        
     }
     
     return false;

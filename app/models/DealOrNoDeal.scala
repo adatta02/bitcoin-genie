@@ -66,8 +66,7 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
       throw new Exception("Your case is already selected.")
     }
     
-    val updatedBox = DealOrNoDealBoard(this.boxes, this.currentOffer, 
-    								  Option[Int](pos), this.pastOffers, None)
+    val updatedBox = DealOrNoDealBoard(this.boxes, this.currentOffer, Option[Int](pos), this.pastOffers, None)
     updatedBox.openBox(pos)
   }
   
@@ -75,7 +74,7 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     if(this.getNumAvailable == 1){
       this
     }else{
-      this.openBox(pos)
+      this.doBox(pos)
     }
   }
   
@@ -122,13 +121,14 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     		  "boxesToPick" -> this.getBoxesToPick,    		  
     		  "lastAmount" -> this.getLastAmount,
     		  "canSwitch" -> this.canSwitch,
-    		  "yourBoxValue" -> this.getSelectedBoxValue)    
+    		  "yourBoxValue" -> this.getSelectedBoxValue,
+    		  "pastOffers" -> this.pastOffers)    
   }
   
   def getLastAmount: Option[Double] = {
     val playedBoxes = this.boxes.filter(a => a.isPlayed).sortBy( a => a.playIndex )
     
-    if( playedBoxes.length > 0 ){
+    if( playedBoxes.length > 1 ){
       Option[Double](playedBoxes.last.amount)
     }else{
       None
@@ -183,7 +183,7 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     }
   }
   
-  def getSelectedBoxValue: Option[Double] = {
+  def getSelectedBoxValue: Option[Double] = {    
     if(this.didSwitch.isEmpty){
       None
     }else{
@@ -217,6 +217,10 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
   }
   
   def declineSwitchCase: DealOrNoDealBoard = {
+    if( !this.canSwitch ){
+      this
+    }
+    
     DealOrNoDealBoard(this.boxes, this.currentOffer, this.selectedBox, this.pastOffers, Option[Boolean](false))
   }
   
