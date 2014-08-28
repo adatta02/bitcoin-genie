@@ -4,10 +4,14 @@
 
 GET     /                           controllers.Application.index()
 GET     /game/:id                   controllers.Application.game(id: Int)
+GET     /redeem/:key                controllers.Application.redeem(key: String)
+
 POST    /get-hash                   controllers.Application.getHash()
 GET     /random-phrases             controllers.Application.getRandomPhrases()
-GET     /redeem/:key                controllers.Application.redeem(key: String)
+
 POST    /play-deal/:id              controllers.Application.playDeal(id: Int)
+
+GET     /util/:action                controllers.Application.util(action: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

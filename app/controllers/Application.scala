@@ -1,5 +1,6 @@
 package controllers
 
+import util._
 import models._
 import anorm._
 import play.api.mvc.{Action, Controller, Result}
@@ -9,6 +10,16 @@ import play.api.libs.json._
 
 object Application extends Controller {  
   
+  def util(key: String) = Action {
+    
+    key match {
+      case "initKeys" => SeedDb.seedKeys
+      case "seedPhrases" => SeedDb.seedPhrases
+      case _ => 
+    }
+    
+    Ok("Ok")
+  }
   
   def redeem(key: String) = Action {
     
@@ -54,28 +65,33 @@ object Application extends Controller {
     val game = AvailableKeys.find(id).get
     val dealBoard = game.getDealOrNoDealBoard    
     
-    val result = request.body.\("action").as[String] match {
+    val updatedBoard = request.body.\("action").as[String] match {
+      
+      case "declineSwitchBox" => {
+        dealBoard.declineSwitchCase
+      }
+      
+      case "switchBox" => {
+        dealBoard.switchCase
+      }
       
       case "selectCase" => {
         val pos = request.body.\("pos").asOpt[Int].get
-        val updatedBoard = dealBoard.seletBox(pos)
-        
-        AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
-        			 .getDealOrNoDealBoard
-        			 .getJsonForView
+        dealBoard.seletBox(pos)        
       }
       
       case "openBox" => {
         val pos = request.body.\("pos").asOpt[Int].get
-        val updatedBoard = dealBoard.openBox(pos)
-
-        AvailableKeys.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
-        			 .getDealOrNoDealBoard
-        			 .getJsonForView        
+        dealBoard.openBox(pos)
       }
       
       case _ => sys.error("Unrecognized action")
-    }    
+    }
+    
+    val result = AvailableKeys
+    				.update(game, ("deal_board" -> Json.toJson(updatedBoard).toString))
+    				.getDealOrNoDealBoard
+    				.getJsonForView        
     
     Ok( Json.toJson(result) )
   }}

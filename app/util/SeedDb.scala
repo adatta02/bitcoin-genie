@@ -1,11 +1,13 @@
 package util
 
+import models._
 import anorm._
 import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.Codecs
 import java.security.MessageDigest
 import scala.util.Random
+import play.api.libs.json.Json
 
 /*
  * To use this:
@@ -43,15 +45,16 @@ object SeedDb {
       
       SQL("DELETE FROM available_key").execute
       
-      val games = Array("golf", "photobooth", "dealnodeal")
+      val games = Array("golf", "dealnodeal")
       
       for(i <- 1 to 50){
                 
-        SQL("INSERT INTO available_key (public_key, amount, game, redeem_key) VALUES ({key}, {amount}, {game}, {redeemKey})")
+        SQL("INSERT INTO available_key (public_key, amount, game, deal_board, redeem_key) VALUES ({key}, {amount}, {game}, {deal_board}, {redeemKey})")
           .on("key" -> this.getRandomKey(31), 
               "redeemKey" -> this.getRandomKey(12),
               "amount" -> (scala.util.Random.nextDouble * 10).formatted("%.2f"),
-              "game" -> games(scala.util.Random.nextInt(3))                         
+              "game" -> games(scala.util.Random.nextInt(games.length)),
+              "deal_board" -> Json.toJson(DealOrNoDeal.getNewBoard).toString
          ).executeInsert()
          
       }      

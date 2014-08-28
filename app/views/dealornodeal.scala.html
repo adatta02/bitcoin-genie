@@ -15,9 +15,7 @@
                        </div>
                    </div>
                    
-                   <div class="row margin-top">                   
-                        <div id="boardTarget"></div>                   
-                   </div>
+                   <div id="boardTarget"></div>                   
                    
                     <div class="row margin-top">
                     
@@ -41,6 +39,8 @@
 </div>
 
 <script type="text/template" id="boardTemplate">
+<div class="row margin-top">
+
 <div class="col-md-2 amount-container">
     <div class="inner">
         <ul>
@@ -75,7 +75,8 @@
 
     <div class="row game-info-row">
         <div class="col-md-7">
-            <div data-provide="game-status" class="game-status alert alert-info">
+            <div data-provide="game-status" 
+                class="game-status alert alert-info <%= status.length ? "" : "hidden" %>">
                 <%= status %>
             </div>    
         </div>
@@ -88,6 +89,20 @@
         </div>
     </div>    
 
+    <% if( board.yourBoxValue ){ %>
+    <div class="row margin-top">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="alert alert-success text-center">
+                <h3>Your case contained: <%= board.yourBoxValue %></h3>
+            </div>
+
+            <div class="text-center send-btc-btn">
+                <a href="#" class="btn btn-primary btn-lg">Send me my BTC!</a>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
 </div>
 <div class="col-md-2 amount-container">
     <div class="inner">
@@ -97,6 +112,7 @@
             <% } %>            
         </ul>
     </div>                        
+</div>
 </div>
 
 </script>
@@ -125,6 +141,31 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="switchBoxModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header">        
+        <h4 class="modal-title">Trade Cases?</h4>
+      </div>
+      
+      <div class="modal-body">
+        <div data-provide="banker-info" class="alert alert-success text-center banker-info">
+             <p>In the spirit of competition, the Banker will let you trade your case for the last case on the board.</p>
+             <p><strong>Would you like to?</strong></p>
+        </div>        
+      </div>
+      
+      <div class="modal-footer">
+        <a class="btn btn-danger" href="#nope" data-provide="trade-box">Nope, No trade</a>
+        <a class="btn btn-success" href="#yes" data-provide="trade-box">Yes! Let's trade</a>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 
 <script type="text/template" id="bankerTemplate">
 <div class="row">
@@ -184,8 +225,7 @@ function showBankerOffer(){
     
     $("#bankerModal").modal({keyboard: false});
     
-    $("#bankerModal").on("shown.bs.modal", function(){
-    
+    $("#bankerModal").on("shown.bs.modal", function(){    
         window.setTimeout(function(){
             $("#bankerModal .modal-footer button").removeClass("hidden");
             $("#bankerModal .banker-info").addClass("hidden");            
@@ -197,8 +237,33 @@ function showBankerOffer(){
     
 }
 
+function showSwitchModal(){
+    $("#switchBoxModal").modal({keyboard: false});
+}
+
+function updateBoard(){
+
+  if( !board.selectedBox ){
+    renderBoard("You need to pick 'your case' to start off!");
+  }else{
+    var status = (board.boxesToPick > 0) ? "Awesome. Just " + board.boxesToPick + " more to pick." : "";  
+    renderBoard(status);
+  }
+
+  if( board.canSwitch ){
+    showSwitchModal();
+  }
+
+  if( board.currentOffer ){
+    showBankerOffer();            
+  }
+  
+}
+
 $(document).ready(function(){      
         
+  updateBoard();
+  
   $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
         
     if( $(this).data("isplayed") ){
@@ -211,27 +276,37 @@ $(document).ready(function(){
     if( !board.selectedBox ){ 
         fetchJson( {action: "selectCase", pos: parseInt(pos)} ).success(function(data){
             board = data;
-            renderBoard("Awesome. Just " + board.boxesToPick + " more.");            
+            updateBoard();            
         });                            
     }else{
         fetchJson( {action: "openBox", pos: parseInt(pos)} ).success(function(data){
             board = data;
-            renderBoard("Great! Now select " + board.boxesToPick + " cases.");
-            
-            if( board.currentOffer ){
-                showBankerOffer();            
-            }                    
+            updateBoard();
         });                                
     }
     
     return false;
   });      
   
-  if( !board.selectedBox ){
-    renderBoard("You need to pick 'your case' to start off!");
-  }else{
-    renderBoard("Awesome. Just " + board.boxesToPick + " more to pick.");
-  }
+  $("#switchBoxModal").on("hide.bs.modal", function(){
+    fetchJson({action: "declineSwitchBox"} ).success(function(data){
+        board = data;
+        updateBoard();        
+    });  
+  });
+  
+  $("#switchBoxModal").on("click", "[data-provide='trade-box']", function(){
+    var action = $(this).attr("href").replace("#", "") == "yes" ? "switchBox" : "declineSwitchBox";
+    
+    fetchJson({action: action} ).success(function(data){
+        $("#switchBoxModal").modal("hide");
+        board = data;
+        updateBoard();        
+    });
+                                        
+    return false;
+  });  
+
   
 });
 </script>
