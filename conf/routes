@@ -5,6 +5,7 @@
 GET     /                           controllers.Application.index()
 GET     /game/:publicKey            controllers.Application.game(publicKey: String)
 GET     /redeem/:key                controllers.Application.redeem(key: String)
+POST    /do-redeem/:key             controllers.Application.doRedeem(key: String)
 
 POST    /golf/get-hash                   controllers.Golf.getHash()
 GET     /golf/random-phrases             controllers.Golf.getRandomPhrases()

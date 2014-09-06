@@ -21,27 +21,37 @@ object Application extends Controller {
     Ok("Ok")
   }
   
-  def redeem(key: String) = Action {
+  def doRedeem(publicKey: String) = Action(parse.json) {implicit request => {
+    
+    Ok( Json.toJson( Json.obj("error" -> false)) )
+  }}
+  
+  def redeem(key: String) = Action { implicit request => {
     
     val game = AvailableKeys.findBy( ("redeem_key" -> key) )
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
-    }    
+    }        
         
     Ok( views.html.redeem(game.get) )
-  }
+  }}
     
   def game(publicKey: String) = Action { implicit request =>
             
     val game = AvailableKeys.findBy("public_key" -> publicKey)
+    
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }
     
-    val viewResult = game.get.game match {
-      case "golf" => Golf.play(game.get)
-      case "dealnodeal" => DealOrNoDeal.render(game.get)
-      case _ => sys.error("Unrecognized game!")
+    val viewResult = if( game.get.isRedeemed ){
+      Ok( views.html.dealover() )
+    }else{
+	    game.get.game match {
+	      case "golf" => Golf.play(game.get)
+	      case "dealnodeal" => DealOrNoDeal.render(game.get)
+	      case _ => sys.error("Unrecognized game!")
+	    }
     }
     
     viewResult
