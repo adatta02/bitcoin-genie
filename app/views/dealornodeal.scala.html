@@ -270,10 +270,11 @@ $(document).ready(function(){
         if( data.url.length == 0 ){
             alert("Sorry! You can't redeem anything right now.");
         }else{
-            window.url = data.url;
+            window.location = data.url;
         }
     });
   
+    return false;
   });
   
   $("[data-provide='take-deal']").click(function(){

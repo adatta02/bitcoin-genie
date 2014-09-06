@@ -11,7 +11,7 @@ object DealOrNoDeal extends Controller {
     val dealBoard = game.getDealOrNoDealBoard
     val htmlJson = dealBoard.getJsonForView
     
-    if( game.amount.isDefined ){
+    if( game.isRedeemed ){
       Ok( views.html.dealover() )
     }else{
       Ok( views.html.dealornodeal(game, htmlJson) )
@@ -19,11 +19,11 @@ object DealOrNoDeal extends Controller {
     
   }  
   
-  def getRedeemUrl(publicKey: String) = Action(parse.json) {request => {
+  def getRedeemUrl(publicKey: String) = Action(parse.json) {implicit request => {
     val game = AvailableKeys.findBy("public_key" -> publicKey).get
     val dealBoard = game.getDealOrNoDealBoard
-    val url = if( game.amount.isDefined ){
-      routes.Application.redeem(game.redeemKey).absoluteURL(request.asInstanceOf[play.mvc.Http.Request], false)
+    val url = if( game.amount.isDefined ){            
+      routes.Application.redeem(game.redeemKey).absoluteURL(false)
     }else{
       ""
     }
@@ -31,7 +31,7 @@ object DealOrNoDeal extends Controller {
     Ok( Json.toJson(Json.obj("url" -> url)) )
   }}
   
-  def takeDeal(publicKey: String) = Action(parse.json) {request => {
+  def takeDeal(publicKey: String) = Action(parse.json) {implicit request => {
     val game = AvailableKeys.findBy("public_key" -> publicKey).get
     val dealBoard = game.getDealOrNoDealBoard
     
@@ -41,7 +41,7 @@ object DealOrNoDeal extends Controller {
       sys.error("Sorry! The game has no offer.")
     }
     
-    val redeemUrl = routes.Application.redeem(game.redeemKey).absoluteURL(request.asInstanceOf[play.mvc.Http.Request], false)
+    val redeemUrl = routes.Application.redeem(game.redeemKey).absoluteURL(false)
     Ok( Json.toJson(Json.obj("url" -> redeemUrl)) )    
   }}
   
@@ -58,15 +58,11 @@ object DealOrNoDeal extends Controller {
     val updatedBoard = action match {
       
       case "declineSwitchBox" => {
-        dealBoard.declineSwitchCase
-        AvailableKeys.update(game, ("amount" -> dealBoard.getSelectedBoxValue.get.toString))
-        dealBoard
+        dealBoard.declineSwitchCase        
       }
       
       case "switchBox" => {
         dealBoard.switchCase
-        AvailableKeys.update(game, ("amount" -> dealBoard.getSelectedBoxValue.get.toString))
-        dealBoard
       }
       
       case "selectCase" => {

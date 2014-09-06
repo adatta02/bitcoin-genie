@@ -10,24 +10,28 @@
                     <div class="row">
                         <div class="col-md-12">                    
                             <div class="pull-left">
-                               <h2>Redeem $@game.amount from @game.publicKey</h2>
+                               <h3>Redeeming @game.amount Satoshi from @game.publicKey</h3>
                             </div>
                         </div>
                     </div>
                     
                     <div class="row margin-top">
                         <div class="col-md-6 col-md-offset-3">
-                            <div class="text-center">
-                              <h3>Enter your public address:</h3>
-                              <form method="POST" action="@routes.Application.redeem(game.redeemKey)">
-                                  <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Enter your public address...">
-                                  </div>                  
-                                  <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-lg">Redeem coins!</button>
-                                  </div>              
-                              </form>
-                            </div>
+                        
+                            <form method="POST" action="@routes.Application.redeem(game.redeemKey)">
+                                <div class="form-group">
+                                    <label for="email">Your Email address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Your email address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="key">Your Public Address (ex. 19RmoHjANGwoNr3g711iKpQGLWEhtGZM1c)</label>
+                                    <input type="text" class="form-control" id="key" placeholder="Your public address">
+                                </div>                                                                
+                              <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">Redeem!</button>
+                              </div>                                
+                            </form>
+                            
                         </div>
                     </div>                    
                     
