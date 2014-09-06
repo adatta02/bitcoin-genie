@@ -94,7 +94,7 @@
         var data = {id: @game.id, phrase: phrase.join(" ")};
         
         $.ajax({
-          url: "@routes.Application.getHash",
+          url: "@routes.Golf.getHash",
           type: "POST",
           data: JSON.stringify(data),
           contentType: "application/json; charset=utf-8",
@@ -129,7 +129,7 @@
           });
 
           $("[data-provide='own-phrase'] button[type='reset']").click(function(){
-            $.get("@routes.Application.getRandomPhrases", function(html){
+            $.get("@routes.Golf.getRandomPhrases", function(html){
                 $("[data-provide='options-list']").html( html );
             }); 
             return false;

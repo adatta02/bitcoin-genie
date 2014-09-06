@@ -60,7 +60,7 @@ object DealOrNoDealBoard {
 
 case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[Double], 
 							 selectedBox: Option[Int], pastOffers: List[Double], didSwitch: Option[Boolean])  {
-  
+    
   def seletBox(pos: Int): DealOrNoDealBoard = {
     if( selectedBox.isDefined ){
       throw new Exception("Your case is already selected.")
@@ -122,7 +122,7 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     		  "lastAmount" -> this.getLastAmount,
     		  "canSwitch" -> this.canSwitch,
     		  "yourBoxValue" -> this.getSelectedBoxValue,
-    		  "pastOffers" -> this.pastOffers)    
+    		  "pastOffers" -> this.pastOffers.take(this.pastOffers.length-1))    
   }
   
   def getLastAmount: Option[Double] = {

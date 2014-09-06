@@ -3,15 +3,17 @@
 # ~~~~
 
 GET     /                           controllers.Application.index()
-GET     /game/:id                   controllers.Application.game(id: Int)
+GET     /game/:publicKey            controllers.Application.game(publicKey: String)
 GET     /redeem/:key                controllers.Application.redeem(key: String)
 
-POST    /get-hash                   controllers.Application.getHash()
-GET     /random-phrases             controllers.Application.getRandomPhrases()
+POST    /golf/get-hash                   controllers.Golf.getHash()
+GET     /golf/random-phrases             controllers.Golf.getRandomPhrases()
 
-POST    /play-deal/:id              controllers.Application.playDeal(id: Int)
+POST    /play-deal/:publicKey              controllers.DealOrNoDeal.playDeal(publicKey: String)
+POST    /take-deal/:publicKey              controllers.DealOrNoDeal.takeDeal(publicKey: String)
+POST    /get-redeem-key/:publicKey              controllers.DealOrNoDeal.getRedeemUrl(publicKey: String)
 
-GET     /util/:action                controllers.Application.util(action: String)
+GET     /util/:action               controllers.Application.util(action: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -19,7 +19,7 @@
 	                        </tr>
 	                        @for(key <- availableKeys){
 	                            <tr>
-	                                <td><a href="@routes.Application.game(key.id)">@key.getReadableGame</a></td>
+	                                <td><a href="@routes.Application.game(key.publicKey)">@key.getReadableGame</a></td>
 	                                <td>$@key.amount</td>
 	                                <td>@key.publicKey</td>                               
 	                            </tr>

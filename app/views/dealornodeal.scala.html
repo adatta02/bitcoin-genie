@@ -10,20 +10,15 @@
                     <div class="row">
                         <div class="col-md-12">                    
                             <div class="pull-left">
-                               <h2>@game.getReadableGame at @game.publicKey</h2>
+                               <h3>Playing at @game.publicKey</h3>
                            </div>
                        </div>
                    </div>
                    
                    <div id="boardTarget"></div>                   
                    
-                    <div class="row margin-top">
-                    
-                        <div class="col-md-9">
-
-                        </div>
-                   
-                        <div class="col-md-3">
+                    <div class="row margin-top">                                       
+                        <div class="col-md-6 col-md-offset-3">
                             <div class="info-box alert alert-info text-right">
                                 <h3 class="no-margin">How it works:</h3>
                                 <ul class="game-rules">
@@ -98,7 +93,7 @@
             </div>
 
             <div class="text-center send-btc-btn">
-                <a href="#" class="btn btn-primary btn-lg">Send me my BTC!</a>
+                <a href="#" data-provide="redeem-btc" class="btn btn-primary btn-lg">Redeem your BTC!</a>
             </div>
         </div>
     </div>
@@ -136,7 +131,7 @@
       
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Nope, No deal</button>
-        <button type="button" class="btn btn-success">OK, I'll take the deal!</button>
+        <button type="button" class="btn btn-success" data-provide="take-deal">OK, I'll take the deal!</button>
       </div>
       
     </div>
@@ -199,7 +194,7 @@ function getBoxAtPos(position){
 function fetchJson( payload, url ){
 
      if( !url ){
-       url = "@routes.Application.playDeal(game.id)"
+       url = "@routes.DealOrNoDeal.playDeal(game.publicKey)"
      }
 
     return $.ajax({url: url, type: "POST",
@@ -268,6 +263,26 @@ function updateBoard(){
 $(document).ready(function(){      
         
   updateBoard();
+  
+  $("#boardTarget").on("click", "[data-provide='redeem-btc']", function(){
+  
+    fetchJson({}, "@routes.DealOrNoDeal.getRedeemUrl(game.publicKey)").done(function(data){
+        if( data.url.length == 0 ){
+            alert("Sorry! You can't redeem anything right now.");
+        }else{
+            window.url = data.url;
+        }
+    });
+  
+  });
+  
+  $("[data-provide='take-deal']").click(function(){
+    
+    fetchJson({}, "@routes.DealOrNoDeal.takeDeal(game.publicKey)").done(function(data){
+        window.url = data.url;
+    });
+    
+  });
   
   $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
     
