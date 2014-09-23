@@ -1,5 +1,6 @@
 package controllers
 
+import plugins.BtcWalletPlugin
 import util._
 import models._
 import anorm._
@@ -7,6 +8,8 @@ import play.api.mvc.{Action, Controller, Result}
 import play.api.db.DB
 import play.api.Play.current
 import play.api.libs.json._
+import play.api.Play
+import play.api.Play.current
 
 object Application extends Controller {  
   
@@ -32,7 +35,10 @@ object Application extends Controller {
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }        
-        
+    
+    Play.application.plugin[BtcWalletPlugin]
+    	.get.sendAmountToAddress("mgokbHGj4T981dGTjnpjyJPcBHELJVs88x", 10000)
+    
     Ok( views.html.redeem(game.get) )
   }}
     
