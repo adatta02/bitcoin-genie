@@ -45,16 +45,38 @@ class BtcWalletPlugin(app: Application) extends Plugin {
     this.kit.stopAsync()
   }   
   
-  def sendAmountToAddress(address: String, amount: Double): Unit = {
+  def checkIsAddressValid(address: String): Tuple2[Boolean, String] = {
     
-    val targetAddress = new Address(kit.params(), address)
-    val res = this.kit.wallet.sendCoins(kit.peerGroup(), targetAddress, Coin.valueOf(amount.longValue()))
-        
-    res.broadcastComplete.addListener(new Runnable{
-      def run: Unit = {
-        println("The transaction is complete!")
+    try {
+      val targetAddress = new Address(kit.params(), address)
+      (false, "")
+    }catch{
+      case e:Throwable => {
+        (true, e.getMessage())
       }
-    }, MoreExecutors.sameThreadExecutor())    
+    }
+    
+  }
+  
+  def sendAmountToAddress(address: String, amount: Double): String = {
+    
+    println( "BALANCE: " + kit.wallet.getBalance )
+    
+    val targetAddress = new Address(kit.params(), address)       
+    
+    try {
+    	val res = this.kit.wallet.sendCoins(kit.peerGroup(), targetAddress, Coin.valueOf(amount.longValue()))
+    	
+	    res.broadcastComplete.addListener(new Runnable{
+	      def run: Unit = {
+	        println("The transaction is complete!")
+	      }
+	    }, MoreExecutors.sameThreadExecutor())
+	    
+	    ""
+    }catch{
+      case _:Throwable => {""} 
+    }
     
   }
   

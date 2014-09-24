@@ -1,8 +1,91 @@
 @(availableKeys: List[AvailableKey])
 
-@main("Welcome!") {
-
-    <div class="container well-container">
+@main("Got BTC?", "homepage") {
+    
+    <div class="homepage-splash">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 text-center">
+                    <h1>Got Bitcoin?</h1>
+                    <p>Because we do, and we're hooking you up!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="homepage-about">
+        <div class="container">
+        
+            <div class="row">
+            
+                <div class="col-md-7">
+                    <h1>What is Bitcoin?</h1>
+                    <div class="emphasis">
+                        "Bitcoin is pretty much like cash for the Internet. Bitcoin can also be seen as the most prominent 
+                        <a target="_blank" href="http://financialcryptography.com/mt/archives/001325.html">triple entry bookkeeping system in existence.</a>"
+                        <a class="source" href="https://bitcoin.org/en/faq#what-is-bitcoin" target="_blank">- https://bitcoin.org/en/faq#what-is-bitcoin</a>
+                    </div>                   
+                </div>            
+                
+                <div class="col-md-5 text-right">
+                    <h3>Resources:</h3>
+                    <ul class="resources">
+                        <li><a href="https://bitcoin.org/en/faq" target="_blank">Bitcoin Foundation FAQ</a></li>                        
+                        <li><a href="http://www.quora.com/Is-the-cryptocurrency-Bitcoin-a-good-idea" target="_blank">Quora: Is Bitcoin a good idea?</a>
+                        <li><a href="https://www.weusecoins.com/en/getting-started" target="_blank">We use coins: Getting Started</a></li>
+                        <li><a href="http://www.reddit.com/r/Bitcoin/" target="_blank">reddit: /r/bitcoin subreddit</a>
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="row info-row">
+                <div class="col-md-12 text-center">
+                        <iframe width="640" height="360" src="//www.youtube.com/embed/Um63OQz3bjo" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+            
+            <div class="row info-row">
+                <div class="col-md-8 col-md-offset-2">
+                
+                    <ul class="faq-list listless">
+                        <li>
+                            <div class="question">Got it! What's this site all about then?</div>
+                            <div class="answer">We're bullish on Bitcoin and we wanted to build something to explore its capabilities.</div> 
+                        </li>
+                        <li>
+                            <div class="question">How does this work? How do I get free Bitcoin?</div>
+                            <div class="answer">
+                                It's simple! You'll need to login with Facebook below and 
+                                then you'll be able to play 
+                                <a target="_blank" href="http://en.wikipedia.org/wiki/Deal_or_No_Deal_%28U.S._game_show%29">"Deal or No Deal"</a> 
+                                to win up to .01 BTC.</div> 
+                        </li>
+                        <li>
+                            <div class="question">Any relation to the MIT Bitcoin Project?</div>
+                            <div class="answer">Nope, but we think what they're doing is awesome.</div>
+                        </li>
+                        <li>
+                            <div class="question">Are you planning to build anything else Bitcoin related?</div>
+                            <div class="answer">If this goes well then hopefully yes.</div>
+                        </li>
+                        <li>
+                            <div class="question ">Why do I need to login with Facebook?</div>
+                            <div class="answer">Well, we're giving away money and it's unfortunately the easiest way to make it harder to "game" the system and double dip.</div>
+                        </li>                                                
+                    </ul>
+                    
+                    <div class="text-center">
+                        Other questions? Drop us a line <a href="mailto:contact@@setfive.com">contact@@setfive.com</a>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </div>
+          
+    <div class="container well-container hide">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner">
@@ -32,5 +115,10 @@
         </div>
     </div>
 
+<script>
+  $(document).ready(function(){
+      $(".homepage-splash").css("height", window.innerHeight);
+  });
+</script>
 }
  

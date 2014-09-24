@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, bodyClass: String = "")(content: Html)
 
 <!DOCTYPE html>
 <html>
@@ -15,7 +15,7 @@
     <script type='text/javascript' src='@routes.Assets.at("js/less.min.js")'></script>
     <script type='text/javascript' src='@routes.Assets.at("js/underscore-min.js")'></script>
 </head>
-<body>    
+<body class="@bodyClass">    
     
 	<div role="navigation" class="navbar navbar-inverse navbar-fixed-top">
 	        <div class="container">
@@ -30,10 +30,10 @@
 	            </div>
 	            <div class="collapse navbar-collapse">
 	                <div class="logo">
-	                    <a href="/"><img src="@routes.Assets.at("/images/logo_noconsulting.png")"></a>
+	                    <a href="@routes.Application.index()"><img src="@routes.Assets.at("/images/logo_noconsulting.png")"></a>
 	                </div>
 	                <ul class="nav navbar-nav">
-	                    <li class="active"><a href="/">Home</a></li>
+	                    <li class="active"><a href="@routes.Application.index()">Home</a></li>
 	                </ul>
 	            </div><!--/.nav-collapse -->
 	        </div>
@@ -42,6 +42,25 @@
     <div class="content-container">
         @content
     </div>
+    
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-5">
+                    <h2>"No BS. Just Results"</h2>
+                </div>
+                <div class="col-md-6 col-sm-7 text-right">
+                    <div class="link-list text-right">
+                        <a target="_blank" href="http://www.setfive.com">Setfive Consulting</a>
+                        <span class="seperator">|</span>
+                        <a href="mailto:contact@@setfive.com">contact@@setfive.com</a>
+                        <span class="seperator">|</span>
+                        <a href="tel:+16178630440">617-863-0440</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+   </div>    
     
 </body>
 </html>
