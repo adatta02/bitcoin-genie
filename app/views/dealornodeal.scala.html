@@ -1,39 +1,124 @@
 @* dealornodeal Template File *@
 @(game: AvailableKey, dealBoard: play.api.libs.json.JsValue)
 
-@main("Play a game!") {
-    <div class="container well-container deal-nodeal-container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="inner">
-                    
-                    <div class="row">
-                        <div class="col-md-12">                    
-                            <div class="pull-left">
-                               <h3>Playing at @game.publicKey</h3>
-                           </div>
-                       </div>
-                   </div>
-                   
-                   <div id="boardTarget"></div>                   
-                   
-                    <div class="row margin-top">                                       
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="info-box alert alert-info text-right">
-                                <h3 class="no-margin">How it works:</h3>
-                                <ul class="game-rules">
-                                    <li>It's classic <a href="http://en.wikipedia.org/wiki/Deal_or_No_Deal" target="_blank">Deal or No Deal!</a></li>
-                                    <li>The 26 briefcases on the board have between 1 and 1000000 Satoshis in them</li>                                                                    
-                                </ul>
-                            </div>
-                        </div>                                                         
-                  </div>                  
-           </div>
-       </div>
-   </div>
-</div>
+@main("Play a game!", "deal-or-no-deal") {
+           
 
 <script type="text/template" id="boardTemplate">
+
+<div id="boardTarget" class="container board-container">
+    <div class="row">
+
+        <div class="col-md-3 col-lg-2 sidebar-container">
+        
+          <div class="sidebar-profile">
+            <div class="photo"><img src="@routes.Assets.at("images/profile.jpg")"></div>
+            <div class="username">Ashish</div>
+          </div>
+          
+          <div class="your-case">
+            <div class="case-text">Your Case:</div>
+            
+            <div class="pick-one alert alert-white">Please pick one!</div>
+            
+            <% if( board.selectedBox !== null ){ %>
+                <div class="case"><span><%= board.selectedBox + 1 %></span></div>
+            <% } %>
+            
+          </div>
+          
+          <div class="recent-activity">
+            <ul>
+              <li>5,000 <span class="badge">#22</span> <span class="clearfix"></span></li>
+              <li>15,000 <span class="badge">#2</span> <span class="clearfix"></span></li>   
+              <li>1 <span class="badge">#7</span> <span class="clearfix"></span></li>
+              <li>Offer: <span class="offer">45,000</span><span class="clearfix"></span></li>                          
+            </ul>
+          </div>
+                  
+        </div>
+
+        <div class="col-md-9 col-lg-10">
+
+            <div class="row header-container">
+                <div class="col-md-9 col-lg-10">            
+                  <div class="header"><img src="@routes.Assets.at("images/banner.png")"></div>            
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="btn-group game-buttons pull-right">
+                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-volume-off"></span></a>
+                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-question-sign"></span></a>              
+                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-off"></span></a>
+                    </div>          
+                </div>         
+            </div>
+
+            <div class="row inner-board-container">
+
+              <div class="col-md-3 col-lg-2 remaining-amounts">
+                  <ul>
+                    <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+                    <% } %>
+                  </ul>
+              </div>
+              <div class="col-md-6 col-lg-8">
+              
+                <div class="case-container">
+                
+                    <% for(var i = 0; i < 4; i++ ){ %>
+                        <ul class="board-row">
+                            <% for(var j = rows[i][0]; j <= rows[i][rows[i].length-1]; j++){ %>
+                                <li class="<%= window.getBoxAtPos(j-1).isPlayed ? "taken" : "" %>">
+                                
+                                    <a class="briefcase" data-provide="briefcase" href="#<%= (j-1) %>"
+                                      <%= window.getBoxAtPos(j-1).isPlayed ? " data-isplayed=\"true\" " : "" %>>
+                                        <div class="case">
+                                            <span><%= j %></span>
+                                        </div>
+                                    </a>
+                                    <div class="case-amount hidden"></div>
+                                    
+                                </li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                    
+                </div>
+                
+                <div class="message-container">
+                    <div class="alert message <%= status.length ? "" : "hidden" %>" data-provide="game-status">
+                        <%= status %>
+                    </div>
+                </div>
+                
+                <div class="banker-container">
+                    <ul class="offer-list">
+                        <li class="offer-label">Your offer is: </li>
+                        <li class="offer">51,000</li>
+                    </ul>
+                    
+                    <ul class="list-inline">
+                        <li><a href="#" class="btn btn-danger">Nope, no deal!</a></li>
+                        <li><a href="#" class="btn btn-success">Ok, I'll take the deal!</a></li>
+                    </ul>
+                </div>
+                
+              </div>
+              <div class="col-md-3 col-lg-2 remaining-amounts">
+                  <ul>
+                    <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>                
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+                    <% } %>
+                  </ul>
+              </div>
+             
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <div class="row margin-top">
 
 <div class="col-md-2 amount-container">
@@ -212,11 +297,13 @@ function renderBoard(status){
     var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
     var template = _.template( $("#boardTemplate").html() );
     
-    $("#boardTarget").html( template({board: board, rows: rows, status: status}) );
+    $("body").html( template({board: board, rows: rows, status: status}) );
 }
 
 function showBankerOffer(){
 
+    return false;
+    
     var bankerTemplate = _.template( $("#bankerTemplate").html() );
     
     $("#bankerModal .modal-footer button").addClass("hidden");
@@ -243,7 +330,7 @@ function showSwitchModal(){
 
 function updateBoard(){
 
-  if( !board.selectedBox ){
+  if( board.selectedBox === null ){
     renderBoard("You need to pick 'your case' to start off!");
   }else{
     var status = (board.boxesToPick > 0) ? "Awesome. Just " + board.boxesToPick + " more to pick." : "";  
@@ -292,9 +379,9 @@ $(document).ready(function(){
         return false;    
     }
         
-    var pos = $(this).attr("href").replace("#", "");
+    var pos = $(this).attr("href").replace("#", "");        
     
-    if( !board.selectedBox ){ 
+    if( board.selectedBox === null ){ 
         fetchJson( {action: "selectCase", pos: parseInt(pos)} ).success(function(data){
             board = data;
             updateBoard();            
@@ -310,22 +397,33 @@ $(document).ready(function(){
         var width = ($(".game-container").width() - 300) / 2;
         
         $('<div class="modal-backdrop fade in" />').appendTo( $("body") );    
-        $(li).find("a").remove();
-        $(li).css({position: "absolute", left: offset.left - parentOffset.left, top: offset.top - parentOffset.top, "z-index": 1045});
+        
+        $(li).addClass("animated-amount");
+        $(li).find("span").html("");
+        
+        console.log( offset.left );
+        console.log( parentOffset.left ); 
+        
+        $(li).css({position: "absolute", left: offset.left - parentOffset.left, 
+                   top: offset.top - parentOffset.top, "z-index": 1045});
         
         var animateDf = $.Deferred(); 
         
         $.when(fetchDf, animateDf).then(function(){
-            $(li).find(".case-amount").html( board.lastAmount ).removeClass("hidden");
+        
+            $(li).find("span").html( board.lastAmount ).addClass("case-amount");
             
             window.setTimeout(function(){
-                $(".modal-backdrop").remove();
-                updateBoard();
+                // $(".modal-backdrop").remove();
+                // updateBoard();
             }, 3000);
                                 
         });
         
-        $(li).animate({"width": "300", "height": "300", left: width}, function(){animateDf.resolve();});
+        var top = ((parseInt(document.body.clientHeight) / 2) - (parseInt(228) / 2)) +'px';
+        var left = ((parseInt(document.body.clientWidth) / 2) - (parseInt(256) / 2)) +'px';
+        
+        $(li).animate({top: top, left: left, "width": "256", "height": "228", left: width}, function(){animateDf.resolve();});
         
     }
     
