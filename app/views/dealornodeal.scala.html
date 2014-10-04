@@ -109,18 +109,30 @@
                 
                 <% } %>                
                 
-                <div data-provide="banker-container" class="banker-container hidden">
-                                                   
+                <div data-provide="banker-container" class="banker-container hidden">                                                   
                     <ul class="offer-list">
                         <li class="offer-label">Your offer is: </li>
-                        <li data-provide="offer" class="offer"><%= board.currentOffer %></li>
+                        <li data-provide="offer" class="offer"><%= number_format(board.currentOffer) %></li>
                     </ul>
                     
                     <ul class="list-inline">
-                        <li><a href="#" class="btn btn-danger">Nope, no deal!</a></li>
-                        <li><a href="#" class="btn btn-success">Ok, I'll take the deal!</a></li>
-                    </ul>
-                                                          
+                        <li><a href="#" data-provide='no-deal' class="btn btn-danger">Nope, no deal!</a></li>
+                        <li><a href="#" data-provide='take-deal' class="btn btn-success">Ok, I'll take the deal!</a></li>
+                    </ul>                                                         
+                </div>
+                
+                <div data-provide="switch-container" class="switch-container hidden">
+                    <div class="message-container">
+                        <div class="alert message">
+                            In the spirit of competition, the Banker will let you trade your case for the last case on the board.
+                            <strong>Would you like to?</strong>                        
+                                                    
+                            <ul class="list-inline">
+                                <li><a class="btn btn-danger" href="#nope" data-provide="trade-box">Nope, No trade</a></li>
+                                <li><a class="btn btn-success" href="#yes" data-provide="trade-box">Yes! Let's trade</a></li>
+                            </ul>
+                        </div>
+                    </div>                
                 </div>
                 
               </div>
@@ -140,153 +152,6 @@
     </div>
 </div>
 
-<div class="row margin-top">
-
-<div class="col-md-2 amount-container">
-    <div class="inner">
-        <ul>
-            <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
-                <li class="<%= !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
-            <% } %>
-        </ul>
-    </div>
-
-    <div class="your-case">
-        <h3>Your Case</h3>
-        <div class="case">
-            <span><%= board.selectedBox ? board.selectedBox : "?" %></span> 
-        </div>            
-    </div>
-
-</div>
-<div class="col-md-8 game-container">
-
-    <% for(var i = 0; i < 4; i++ ){ %>
-        <ul class="board-row">
-            <% for(var j = rows[i][0]; j <= rows[i][rows[i].length-1]; j++){ %>
-                <li class="<%= window.getBoxAtPos(j-1).isPlayed ? "taken" : "" %>">
-                    <a class="briefcase" data-provide="briefcase" href="#<%= (j-1) %>"
-                      <%= window.getBoxAtPos(j-1).isPlayed ? " data-isplayed=\"true\" " : "" %>>
-                        <%= j %>
-                    </a>
-                    <div class="case-amount hidden"></div>
-                </li>
-            <% } %>
-        </ul>
-    <% } %>
-
-    <div class="row game-info-row">
-        <div class="col-md-7">
-            <div data-provide="game-status" 
-                class="game-status alert alert-info <%= status.length ? "" : "hidden" %>">
-                <%= status %>
-            </div>    
-        </div>
-        <div class="col-md-5">
-            <% if( board.lastAmount ){ %>
-                <div class="last-amount">
-                    Last Case: <%= board.lastAmount %>
-                </div>
-            <% } %>
-        </div>
-    </div>    
-
-    <% if( board.yourBoxValue ){ %>
-    <div class="row margin-top">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="alert alert-success text-center">
-                <h3>Your case contained: <%= board.yourBoxValue %></h3>
-            </div>
-
-            <div class="text-center send-btc-btn">
-                <a href="#" data-provide="redeem-btc" class="btn btn-primary btn-lg">Redeem your BTC!</a>
-            </div>
-        </div>
-    </div>
-    <% } %>
-
-</div>
-<div class="col-md-2 amount-container">
-    <div class="inner">
-        <ul>
-            <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>                
-                <li class="<%= !board.amounts[i]["available"] ? "taken" : "" %>"><span><%= board.amounts[i]["amount"] %></span></li>
-            <% } %>            
-        </ul>
-    </div>                        
-</div>
-</div>
-
-</script>
-
-<div class="modal fade" id="bankerModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      
-      <div class="modal-header">        
-        <h4 class="modal-title">An offer from the banker!</h4>
-      </div>
-      
-      <div class="modal-body">
-        <div data-provide="banker-info" class="alert alert-success text-center banker-info">
-            The banker is contacting you with an offer. <br /> 
-            His offer is based on the remaining cases and your performance so far. 
-        </div>
-        <div data-provide="banker-target"></div>
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Nope, No deal</button>
-        <button type="button" class="btn btn-success" data-provide="take-deal">OK, I'll take the deal!</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="switchBoxModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      
-      <div class="modal-header">        
-        <h4 class="modal-title">Trade Cases?</h4>
-      </div>
-      
-      <div class="modal-body">
-        <div data-provide="banker-info" class="alert alert-success text-center banker-info">
-             <p>In the spirit of competition, the Banker will let you trade your case for the last case on the board.</p>
-             <p><strong>Would you like to?</strong></p>
-        </div>        
-      </div>
-      
-      <div class="modal-footer">
-        <a class="btn btn-danger" href="#nope" data-provide="trade-box">Nope, No trade</a>
-        <a class="btn btn-success" href="#yes" data-provide="trade-box">Yes! Let's trade</a>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-
-<script type="text/template" id="bankerTemplate">
-<div class="row">
-
-  <div class="col-md-7">
-    <div class="text-center banker-offer-container">
-        <h3>Your offer is:</h3>
-        <div class="banker-offer-amount"><%= board.currentOffer %></div>
-    </div>
-   </div>
-  <div class="col-md-5">
-    <h4>Previous Offers:</h4>
-    <ul class="list-unstyled">
-        <% _.each(board.pastOffers, function(val){ %>
-            <li><%= val %></li>
-        <% }); %>
-    </ul>
-  </div>
-</div>
 </script>
 
 <script>
@@ -332,31 +197,11 @@ function showBankerOffer(){
         
         $("[data-provide='banker-container']").removeClass("hidden");    
     }, 3000);
-    
-    /*    
-    var bankerTemplate = _.template( $("#bankerTemplate").html() );
-    
-    $("#bankerModal .modal-footer button").addClass("hidden");
-    $("#bankerModal .banker-info").removeClass("hidden");    
-    $("#bankerModal [data-provide='banker-target']").html("");
-    
-    $("#bankerModal").modal({keyboard: false});
-    
-    $("#bankerModal").on("shown.bs.modal", function(){    
-        window.setTimeout(function(){
-            $("#bankerModal .modal-footer button").removeClass("hidden");
-            $("#bankerModal .banker-info").addClass("hidden");            
-            $("#bankerModal [data-provide='banker-target']").html( bankerTemplate() );
-        }, 3000);
-    
-        $("#bankerModal").off("shown.bs.modal");    
-    });
-    */
-    
+        
 }
 
 function showSwitchModal(){
-    $("#switchBoxModal").modal({keyboard: false});
+    $("[data-provide='switch-container']").removeClass("hidden");
 }
 
 function updateBoard(){
@@ -382,7 +227,7 @@ $(document).ready(function(){
         
   updateBoard();
   
-  $("#boardTarget").on("click", "[data-provide='redeem-btc']", function(){
+  $("body").on("click", "[data-provide='redeem-btc']", function(){
   
     fetchJson({}, "@routes.DealOrNoDeal.getRedeemUrl(game.publicKey)").done(function(data){
         if( data.url.length == 0 ){
@@ -395,15 +240,32 @@ $(document).ready(function(){
     return false;
   });
   
-  $("[data-provide='take-deal']").click(function(){
-    
+  $("body").on("click", "[data-provide='take-deal']", function(){
     fetchJson({}, "@routes.DealOrNoDeal.takeDeal(game.publicKey)").done(function(data){
         window.url = data.url;
     });
     
+    return false;  
   });
   
-  $("#boardTarget").on("click", "[data-provide='briefcase']", function(){
+  $("body").on("click", "[data-provide='no-deal']", function(){
+    $("[data-provide='banker-container']").addClass("hidden");
+    return false;        
+  });  
+  
+  $("body").on("click", "[data-provide='trade-box']", function(){
+    var action = $(this).attr("href").replace("#", "") == "yes" ? "switchBox" : "declineSwitchBox";
+    
+    fetchJson({action: action} ).success(function(data){
+        $("#switchBoxModal").modal("hide");
+        board = data;
+        updateBoard();        
+    });
+    
+    return false;
+  });
+    
+  $("body").on("click", "[data-provide='briefcase']", function(){
     
     if( $(this).data("isplayed") ){
         alert("Sorry! That case has already been played.");   
@@ -454,27 +316,8 @@ $(document).ready(function(){
     }
     
     return false;
-  });      
+  });        
   
-  $("#switchBoxModal").on("hide.bs.modal", function(){
-    fetchJson({action: "declineSwitchBox"} ).success(function(data){
-        board = data;
-        updateBoard();        
-    });  
-  });
-  
-  $("#switchBoxModal").on("click", "[data-provide='trade-box']", function(){
-    var action = $(this).attr("href").replace("#", "") == "yes" ? "switchBox" : "declineSwitchBox";
-    
-    fetchJson({action: action} ).success(function(data){
-        $("#switchBoxModal").modal("hide");
-        board = data;
-        updateBoard();        
-    });
-                                        
-    return false;
-  });  
-
   
 });
 </script>
