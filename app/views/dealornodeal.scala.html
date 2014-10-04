@@ -1,8 +1,9 @@
 @* dealornodeal Template File *@
 @(game: AvailableKey, dealBoard: play.api.libs.json.JsValue)
 
-@main("Play a game!", "deal-or-no-deal") {
+@main("Play a game!", "deal-or-no-deal-body") {
            
+<div class="deal-or-no-deal"></div>
 
 <script type="text/template" id="boardTemplate">
 
@@ -58,7 +59,9 @@
               <div class="col-md-3 col-lg-2 remaining-amounts">
                   <ul>
                     <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
-                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>">
+                            <span><%= number_format(board.amounts[i]["amount"]) %></span>
+                        </li>
                     <% } %>
                   </ul>
               </div>
@@ -92,23 +95,41 @@
                     </div>
                 </div>
                 
-                <div class="banker-container">
+                <% if( board.yourBoxValue ){ %>
+                
+                    <div class="message-container your-box-container">
+                        <div class="alert message">
+                            <div class="large-text">Your case contained: <%= number_format(board.yourBoxValue) %></div>
+                            
+                            <div class="text-center send-btc-btn">
+                                <a href="#" data-provide="redeem-btc" class="btn btn-primary">Redeem your BTC!</a>
+                            </div>                            
+                        </div>
+                    </div>                
+                
+                <% } %>                
+                
+                <div data-provide="banker-container" class="banker-container hidden">
+                                                   
                     <ul class="offer-list">
                         <li class="offer-label">Your offer is: </li>
-                        <li class="offer">51,000</li>
+                        <li data-provide="offer" class="offer"><%= board.currentOffer %></li>
                     </ul>
                     
                     <ul class="list-inline">
                         <li><a href="#" class="btn btn-danger">Nope, no deal!</a></li>
                         <li><a href="#" class="btn btn-success">Ok, I'll take the deal!</a></li>
                     </ul>
+                                                          
                 </div>
                 
               </div>
               <div class="col-md-3 col-lg-2 remaining-amounts">
                   <ul>
                     <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>                
-                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>"><span><%= board.amounts[i]["amount"] %></span></li>
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>">
+                            <span><%= number_format(board.amounts[i]["amount"]) %></span>
+                        </li>
                     <% } %>
                   </ul>
               </div>
@@ -297,13 +318,22 @@ function renderBoard(status){
     var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
     var template = _.template( $("#boardTemplate").html() );
     
-    $("body").html( template({board: board, rows: rows, status: status}) );
+    $(".deal-or-no-deal").html( template({board: board, rows: rows, status: status}) );
 }
 
 function showBankerOffer(){
-
-    return false;
     
+    $("[data-provide='game-status']")
+        .removeClass("hidden")
+        .html("The banker is contacting you right now with an offer.");
+    
+    window.setTimeout(function(){
+        $("[data-provide='game-status']").addClass("hidden");
+        
+        $("[data-provide='banker-container']").removeClass("hidden");    
+    }, 3000);
+    
+    /*    
     var bankerTemplate = _.template( $("#bankerTemplate").html() );
     
     $("#bankerModal .modal-footer button").addClass("hidden");
@@ -321,6 +351,7 @@ function showBankerOffer(){
     
         $("#bankerModal").off("shown.bs.modal");    
     });
+    */
     
 }
 
@@ -400,30 +431,25 @@ $(document).ready(function(){
         
         $(li).addClass("animated-amount");
         $(li).find("span").html("");
-        
-        console.log( offset.left );
-        console.log( parentOffset.left ); 
-        
+                
         $(li).css({position: "absolute", left: offset.left - parentOffset.left, 
                    top: offset.top - parentOffset.top, "z-index": 1045});
         
         var animateDf = $.Deferred(); 
+        
+        var left = (($(".board-row").width() / 2) - 128);        
+        $(li).animate({top: 0, left: left, "width": 256, "height": 228}, function(){animateDf.resolve();});
         
         $.when(fetchDf, animateDf).then(function(){
         
             $(li).find("span").html( board.lastAmount ).addClass("case-amount");
             
             window.setTimeout(function(){
-                // $(".modal-backdrop").remove();
-                // updateBoard();
+                $(".modal-backdrop").remove();
+                updateBoard();
             }, 3000);
                                 
-        });
-        
-        var top = ((parseInt(document.body.clientHeight) / 2) - (parseInt(228) / 2)) +'px';
-        var left = ((parseInt(document.body.clientWidth) / 2) - (parseInt(256) / 2)) +'px';
-        
-        $(li).animate({top: top, left: left, "width": "256", "height": "228", left: width}, function(){animateDf.resolve();});
+        });        
         
     }
     
