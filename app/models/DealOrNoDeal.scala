@@ -103,7 +103,13 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
   def getJsonForView: JsValue = {
     val boxes = Json.toJson( this )
     				.\("boxes").as[ Seq[JsObject] ]
-    				.map(a => {a ++ Json.obj( "amount" -> "" )})
+    				.map(a => {
+    				  if( a.\("isPlayed").as[Boolean] ){
+    				    a
+    				  }else{
+    				   a ++ Json.obj( "amount" -> "" ) 
+    				  }  				  
+    				})
     				
     val amountList = this.boxes.sortBy(el => el.amount).map(a => {
       val isPlayed = if ( this.selectedBox.isDefined && a.pos == this.selectedBox.get ) {

@@ -19,21 +19,28 @@
           
           <div class="your-case">
             <div class="case-text">Your Case:</div>
-            
-            <div class="pick-one alert alert-white">Please pick one!</div>
-            
+                                    
             <% if( board.selectedBox !== null ){ %>
                 <div class="case"><span><%= board.selectedBox + 1 %></span></div>
+            <% }else{ %>
+                <div class="pick-one alert alert-white">Please pick one!</div>
             <% } %>
             
           </div>
           
           <div class="recent-activity">
             <ul>
-              <li>5,000 <span class="badge">#22</span> <span class="clearfix"></span></li>
-              <li>15,000 <span class="badge">#2</span> <span class="clearfix"></span></li>   
-              <li>1 <span class="badge">#7</span> <span class="clearfix"></span></li>
-              <li>Offer: <span class="offer">45,000</span><span class="clearfix"></span></li>                          
+              <% _.each( getPreviousActions(), function(obj){ %>
+                <% if( obj.type == "offer" ){ %>
+                    <li>Offer: <span class="offer"><%= number_format(obj.value) %></span><span class="clearfix"></span></li>
+                <% } %>
+                
+                <% if( obj.type == "opened_box" ){ %>
+                    <li><%= number_format(obj.amount) %> <span class="badge">#<%= obj.pos + 1 %></span> <span class="clearfix"></span></li>  
+                <% } %>
+                
+              <% }); %>
+                                                                                 
             </ul>
           </div>
                   
@@ -157,6 +164,25 @@
 <script>
 
 var board = @Html(dealBoard.toString);
+
+function getPreviousActions(){
+    var list = [];
+    var sortedBoxes = _.sortBy( _.filter(board.boxes, function(el){return el.playIndex ? true : false;}) , "playIndex");
+    var dealIndex = [ 20, 15, 11, 8, 6, 5, 4, 3, 2 ];
+    var pastOfferIndex = 0;
+    
+    for(var i = 0; i < sortedBoxes.length; i++){
+        sortedBoxes[i].type = "opened_box";
+        list.push( sortedBoxes[i] );
+        
+        if( $.inArray(i, dealIndex) > -1 ){
+            list.push( {type: "offer", value: board.pastOffers[pastOfferIndex]} );
+            pastOfferIndex += 1;
+        }        
+    }
+    
+    return list;
+}
 
 function toggleBriefcases(dir){
     if( dir == "disable" ){
