@@ -158,6 +158,16 @@
 
 var board = @Html(dealBoard.toString);
 
+function toggleBriefcases(dir){
+    if( dir == "disable" ){
+        $(".case-container").addClass("disabled");        
+    }
+    
+    if( dir == "enable" ){
+        $(".case-container").removeClass("disabled");
+    }
+}
+
 function getBoxAtPos(position){
     return _.findWhere(board.boxes, {pos: position});
 }
@@ -188,19 +198,21 @@ function renderBoard(status){
 
 function showBankerOffer(){
     
+    toggleBriefcases("disable");
+    
     $("[data-provide='game-status']")
         .removeClass("hidden")
         .html("The banker is contacting you right now with an offer.");
     
     window.setTimeout(function(){
-        $("[data-provide='game-status']").addClass("hidden");
-        
+        $("[data-provide='game-status']").addClass("hidden");        
         $("[data-provide='banker-container']").removeClass("hidden");    
     }, 3000);
         
 }
 
 function showSwitchModal(){
+    toggleBriefcases("disable");
     $("[data-provide='switch-container']").removeClass("hidden");
 }
 
@@ -249,6 +261,7 @@ $(document).ready(function(){
   });
   
   $("body").on("click", "[data-provide='no-deal']", function(){
+    toggleBriefcases("enable");
     $("[data-provide='banker-container']").addClass("hidden");
     return false;        
   });  
@@ -266,6 +279,10 @@ $(document).ready(function(){
   });
     
   $("body").on("click", "[data-provide='briefcase']", function(){
+    
+    if( $(".case-container").hasClass("disabled") ){
+        return false;
+    }
     
     if( $(this).data("isplayed") ){
         alert("Sorry! That case has already been played.");   
