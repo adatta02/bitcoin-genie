@@ -163,7 +163,40 @@
 
 <script>
 
+Howl.prototype.xPlay = function( onEndFn ){
+  var a = document.createElement('audio');
+  var hasAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
+  onEndFn = onEndFn == null ? function(){ this.onend(); } : onEndFn;
+  
+  if( isSoundOn && hasAudio ){
+    this.play();
+  }else{
+    onEndFn();
+  }
+  
+}
+
+var isSoundOn = true;
 var board = @Html(dealBoard.toString);
+
+var bankerOfferClip = new Howl({
+  urls: ["@routes.Assets.at("sound/old-telephone-bell-british-version.mp3")"],
+  buffer: true,
+  onend: function(){
+    $("[data-provide='game-status']").addClass("hidden"); 
+    $("[data-provide='banker-container']").removeClass("hidden");
+  }
+});
+
+var gaspClip = new Howl({
+  urls: ["@routes.Assets.at("sound/gasp.mp3")"],
+  buffer: true
+});
+
+var clapsClip = new Howl({
+  urls: ["@routes.Assets.at("sound/claps.mp3")"],
+  buffer: true
+});
 
 function getPreviousActions(){
     var list = [];
@@ -207,8 +240,7 @@ function fetchJson( payload, url ){
     return $.ajax({url: url, type: "POST",
                   data: JSON.stringify(payload), 
                   contentType: "application/json; charset=utf-8",
-                  dataType: "json",      
-    });
+                  dataType: "json"});
 }
 
 function setGameStatus( status ){
@@ -230,11 +262,9 @@ function showBankerOffer(){
         .removeClass("hidden")
         .html("The banker is contacting you right now with an offer.");
     
-    window.setTimeout(function(){
-        $("[data-provide='game-status']").addClass("hidden");        
-        $("[data-provide='banker-container']").removeClass("hidden");    
-    }, 3000);
-        
+    bankerOfferClip.xPlay(function(){
+        window.setTimeout(function(){ bankerOfferClip.onend(); }, 3000);
+    });         
 }
 
 function showSwitchModal(){
@@ -287,8 +317,12 @@ $(document).ready(function(){
   });
   
   $("body").on("click", "[data-provide='no-deal']", function(){
+    
+    gaspClip.xPlay();
+    
     toggleBriefcases("enable");
     $("[data-provide='banker-container']").addClass("hidden");
+    
     return false;        
   });  
   
@@ -314,7 +348,9 @@ $(document).ready(function(){
         alert("Sorry! That case has already been played.");   
         return false;    
     }
-        
+    
+    clapsClip.play();    
+    
     var pos = $(this).attr("href").replace("#", "");        
     
     if( board.selectedBox === null ){ 
