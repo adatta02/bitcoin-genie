@@ -54,9 +54,9 @@
                 </div>
                 <div class="col-md-3 col-lg-2">
                     <div class="btn-group game-buttons pull-right">
-                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-volume-off"></span></a>
-                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-question-sign"></span></a>              
-                        <a href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-off"></span></a>
+                        <a data-provide="toggle-sound" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-volume-off"></span></a>
+                        <a data-provide="get-help" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-question-sign"></span></a>              
+                        <a data-provide="quit-game" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-off"></span></a>
                     </div>          
                 </div>         
             </div>
@@ -165,18 +165,18 @@
 
 Howl.prototype.xPlay = function( onEndFn ){
   var a = document.createElement('audio');
-  var hasAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));
-  onEndFn = onEndFn == null ? function(){ this.onend(); } : onEndFn;
+  var hasAudio = !!(a.canPlayType && a.canPlayType('audio/mpeg;').replace(/no/, ''));  
+  onEndFn = onEndFn == null ? this.onend : onEndFn;
   
-  if( isSoundOn && hasAudio ){
+  if( window.isSoundOn && hasAudio ){
     this.play();
-  }else{
+  }else if(onEndFn) {
     onEndFn();
   }
   
 }
 
-var isSoundOn = true;
+window.isSoundOn = true;
 var board = @Html(dealBoard.toString);
 
 var bankerOfferClip = new Howl({
@@ -337,7 +337,26 @@ $(document).ready(function(){
     
     return false;
   });
+  
+  $("body").on("click", "[data-provide='toggle-sound']", function(){
+  
+    var spanClass = "";
+  
+    if( window.isSoundOn ){
+        window.isSoundOn = false;
+        spanClass = "glyphicon-volume-up";
+    }else{
+        window.isSoundOn = true;
+        spanClass = "glyphicon-volume-off";
+    }
     
+    $(this).find("span:first")
+           .removeClass("glyphicon-volume-off glyphicon-volume-up")
+           .addClass(spanClass);
+    
+    return false;  
+  });
+  
   $("body").on("click", "[data-provide='briefcase']", function(){
     
     if( $(".case-container").hasClass("disabled") ){
@@ -349,7 +368,7 @@ $(document).ready(function(){
         return false;    
     }
     
-    clapsClip.play();    
+    clapsClip.xPlay();    
     
     var pos = $(this).attr("href").replace("#", "");        
     
