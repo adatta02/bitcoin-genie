@@ -75,49 +75,71 @@
                         </li>                                                
                     </ul>
                     
+                    <div class="alert alert-danger hidden" data-provide="fb-error"></div>
+                    
+                    <div class="row fb-login-container">
+                        <div class="col-md-6 col-md-offset-3">
+                            
+                            <a class="btn btn-block btn-social btn-facebook" href="#" data-provide="fb-login">
+                                <i class="fa fa-facebook"></i> Login and play!
+                            </a>                    
+                        </div>
+                    </div>
+                                        
                     <div class="text-center">
                         Other questions? Drop us a line <a href="mailto:contact@@setfive.com">contact@@setfive.com</a>
                     </div>
-                    
+                                        
                 </div>
             </div>
-            
+                        
         </div>
-    </div>
-          
-    <div class="container well-container hide">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="inner">
-                    <h2 class="text-center">Welcome To The Bitcoin Genie</h2>
-                    
-                    <h3>Available Games:</h3>
-                    
-                    <div class="col-md-7">
-	                    <table class="available-games table table-bordered table-striped">
-	                        <tr>
-	                            <th>Game</th>
-	                            <th>Amount ($)</th>
-	                            <th>Public Key</th>                      
-	                        </tr>
-	                        @for(key <- availableKeys){
-	                            <tr>
-	                                <td><a href="@routes.Application.game(key.publicKey)">@key.getReadableGame</a></td>
-	                                <td>$@key.amount</td>
-	                                <td>@key.publicKey</td>                               
-	                            </tr>
-	                        }
-	                    </table>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+    </div>          
 
 <script>
+
+window.fbAsyncInit = function() {
+    
+    FB.init({
+      appId      : '197378950324880',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.1'
+    });
+    
+};
+
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  function handleFbResponse(response){
+      
+	  $("[data-provide='fb-error']").addClass("hidden");
+      
+      if (response.status === 'connected') {
+          // testAPI();
+      } else if (response.status === 'not_authorized') {
+          $("[data-provide='fb-error']").html("Sorry! You need to authorize this app to play.").removeClass("hidden");
+          document.getElementById('status').innerHTML = 'Please log ' + 'into this app.';
+      } else {        
+    	  $("[data-provide='fb-error']").html("Sorry! You need to login and authorize this app to play.").removeClass("hidden");
+      }
+      
+  }
+  
   $(document).ready(function(){
       $(".homepage-splash").css("height", window.innerHeight);
+
+      $("[data-provide='fb-login']").click(function(){
+          FB.login(handleFbResponse);
+          return false;
+      });
+      
   });
 </script>
 }
