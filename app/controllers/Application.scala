@@ -73,6 +73,19 @@ object Application extends Controller {
       sys.error("Sorry! That key doesn't exist")
     }
     
+    /*
+    val fbCookie = request.cookies
+    					  .filter(a => {a.name.indexOf("fbsr_") > -1})
+    					  .map(a => a.value).mkString("")
+    
+    if( fbCookie.length() == 0 ){
+      sys.error("Sorry! You need to be logged in with Facebook!")
+    }
+    
+    println(fbCookie)
+    
+    */
+    
     val viewResult = if( game.get.isRedeemed ){
       Ok( views.html.dealover() )
     }else{

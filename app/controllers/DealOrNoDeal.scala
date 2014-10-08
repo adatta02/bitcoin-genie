@@ -1,7 +1,7 @@
 package controllers
 
 import models._
-import play.api.mvc.{Action, Controller, Result}
+import play.api.mvc.{Action, Controller, Result, Cookie}
 import play.api.libs.json._
 
 object DealOrNoDeal extends Controller {
