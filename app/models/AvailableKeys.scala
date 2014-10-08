@@ -8,7 +8,7 @@ import scala.collection._
 import play.api.libs.json._
 
 case class AvailableKey(id: Int, publicKey: String, amount: Option[Double], 
-						game: String, redeemKey: String, dealBoard: String, isRedeemed: Boolean){
+						game: String, redeemKey: String, dealBoard: String, isRedeemed: Boolean, fbUserId: Option[String]){
   
   def getReadableGame: String = {
     this.game match {
@@ -30,16 +30,17 @@ object AvailableKeys {
   
   def rowParser = {
     (int("id") ~ str("public_key") ~ get[Option[java.math.BigDecimal]]("amount") 
-        ~ str("game") ~ str("redeem_key") ~ str("deal_board") ~ get[Boolean]("is_redeemed"))
+        ~ str("game") ~ str("redeem_key") ~ str("deal_board") ~ get[Boolean]("is_redeemed") ~ get[Option[String]]("fb_user_id"))
     .map(f => {      
       f match { 
-	  	case i~pk~a~g~k~b~ir => {
+	  	case i~pk~a~g~k~b~ir~fb => {
 	  	  val amnt = if( a.isDefined ){
 	  		  Option[Double]( a.get.doubleValue() )
 	  	  }else{
 	  	    None
 	  	  }	  	  
-	  	  AvailableKey(i, pk, amnt, g, k, b, ir)
+	  	  
+	  	  AvailableKey(i, pk, amnt, g, k, b, ir, fb)
 	  	}
       }
     })
@@ -77,6 +78,21 @@ object AvailableKeys {
     })
    
     this.find( game.id ).get
+  }
+  
+  def getGameForFBUserId(fbUserId: String): AvailableKey = {
+    val existingGame = this.findBy("fb_user_id" -> fbUserId)
+    val fbUserGame = if( existingGame.isDefined ){
+      existingGame.get
+    }else{
+      val newGame = DB.withConnection(implicit c => {
+        SQL("SELECT * FROM available_key WHERE fb_user_id IS NULL LIMIT 1").as(rowParser.singleOpt)
+      })
+      
+      this.update(newGame.get, ("fb_user_id", fbUserId))      
+    }
+     
+    fbUserGame
   }
   
 }

@@ -122,7 +122,7 @@ window.fbAsyncInit = function() {
 	  $("[data-provide='fb-error']").addClass("hidden");
       
       if (response.status === 'connected') {
-          // testAPI();
+          window.location = "@routes.DealOrNoDeal.startGame";
       } else if (response.status === 'not_authorized') {
           $("[data-provide='fb-error']").html("Sorry! You need to authorize this app to play.").removeClass("hidden");
           document.getElementById('status').innerHTML = 'Please log ' + 'into this app.';

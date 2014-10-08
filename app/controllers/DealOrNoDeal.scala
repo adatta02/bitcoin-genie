@@ -6,7 +6,14 @@ import play.api.libs.json._
 
 object DealOrNoDeal extends Controller {
 
-  def render(game: AvailableKey): Result = {        
+  def startGame = Action {
+    val fbId = "2970"
+    val game = AvailableKeys.getGameForFBUserId(fbId)
+    
+    Redirect( routes.Application.game(game.publicKey) )    
+  }
+  
+  def render(game: AvailableKey): Result = {      
         
     val dealBoard = game.getDealOrNoDealBoard
     val htmlJson = dealBoard.getJsonForView
