@@ -1,17 +1,24 @@
 package controllers
 
+import util.Facebook
 import models._
 import play.api.mvc.{Action, Controller, Result, Cookie}
 import play.api.libs.json._
 
 object DealOrNoDeal extends Controller {
 
-  def startGame = Action {
-    val fbId = "2970"
-    val game = AvailableKeys.getGameForFBUserId(fbId)
+  def startGame = Action {implicit request => {
     
-    Redirect( routes.Application.game(game.publicKey) )    
-  }
+    if( Facebook.isFacebookCookieValid(request.cookies) ){
+      val fbId = Facebook.getUserId(request.cookies)
+      val game = AvailableKeys.getGameForFBUserId( fbId )
+      
+      Redirect( routes.Application.game(game.publicKey) )      
+    }else{
+      Redirect( routes.Application.fbLogin )
+    }         
+        
+  }}
   
   def render(game: AvailableKey): Result = {      
         

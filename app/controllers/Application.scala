@@ -13,10 +13,10 @@ import play.api.Play.current
 
 object Application extends Controller {  
   
-  def fbLogin = Action {
+  def fbLogin = Action { implicit request => {    
     
     Ok( views.html.fbLogin() )
-  }
+  }}
   
   def util(key: String) = Action {
     
@@ -77,13 +77,9 @@ object Application extends Controller {
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }
-        
-    val fbCookie = request.cookies
-    					  .filter(a => {a.name.indexOf("fbsr_") > -1})
-    					  .map(a => a.value).mkString("")
-            
+                    
     val viewResult = 
-      if( fbCookie.length() == 0 || Facebook.isFacebookCookieValid(fbCookie) == false ){
+      if( Facebook.isFacebookCookieValid(request.cookies) == false ){
         Redirect( routes.Application.fbLogin )
       }else if( game.get.isRedeemed ){
         Ok( views.html.dealover() )
