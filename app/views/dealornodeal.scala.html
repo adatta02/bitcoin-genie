@@ -53,8 +53,8 @@
         <div class="col-md-3 col-lg-2 sidebar-container">
         
           <div class="sidebar-profile">
-            <div class="photo"><img src="@routes.Assets.at("images/profile.jpg")"></div>
-            <div class="username">Ashish</div>
+            <div class="photo"><img data-provide="profile-image" src=""></div>
+            <div class="username" data-provide="profile-name"></div>
           </div>
           
           <div class="your-case">
@@ -330,6 +330,24 @@ function updateBoard(){
   }
   
 }
+
+window.onFbLoaded = function(){
+    
+    FB.getLoginStatus(function(loginResponse){    
+        
+        FB.api("/me", function(response){
+            $("[data-provide='profile-name']").html( response["first_name"] );
+        });
+        
+        FB.api("/me/picture?height=160&width=160", function (response) {                                           
+            if( response && !response.error) {
+              $("[data-provide='profile-image']").attr("src", response.data.url);                
+            }                       
+        });    
+    
+    });     
+  
+};
 
 $(document).ready(function(){      
 
