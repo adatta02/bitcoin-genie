@@ -16,6 +16,6 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq( "mysql" % "mysql-connector-java" % "5.1.32" )
 
-// val appDependencies = Seq( "mysql" % "mysql-connector-java" % "5.1.32" )
+libraryDependencies ++= Seq( "commons-codec" % "commons-codec" % "1.7" )
 
 playScalaSettings

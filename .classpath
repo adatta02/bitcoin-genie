@@ -41,6 +41,7 @@
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.1.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/com.ning/async-http-client/jars/async-http-client-1.7.18.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/oauth.signpost/signpost-core/jars/signpost-core-1.2.1.2.jar"/>
+  <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.7.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/oauth.signpost/signpost-commonshttp4/jars/signpost-commonshttp4-1.2.1.2.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/xerces/xercesImpl/jars/xercesImpl-2.11.0.jar"/>
@@ -72,7 +73,6 @@
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/org.seleniumhq.selenium/selenium-api/jars/selenium-api-2.32.0.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.2.1.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.2.1.jar"/>
-  <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.6.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/org.apache.commons/commons-exec/jars/commons-exec-1.1.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/net.java.dev.jna/jna/jars/jna-3.4.0.jar"/>
   <classpathentry kind="lib" path="/home/ashish/.ivy2/cache/net.java.dev.jna/platform/jars/platform-3.4.0.jar"/>

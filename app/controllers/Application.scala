@@ -13,6 +13,11 @@ import play.api.Play.current
 
 object Application extends Controller {  
   
+  def fbLogin = Action {
+    
+    Ok( views.html.fbLogin() )
+  }
+  
   def util(key: String) = Action {
     
     key match {
@@ -65,35 +70,25 @@ object Application extends Controller {
     Ok( views.html.redeem(game.get) )
   }}
     
-  def game(publicKey: String) = Action { implicit request =>
+  def game(publicKey: String) = Action {implicit request =>
             
     val game = AvailableKeys.findBy("public_key" -> publicKey)
     
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }
-    
-    /*
+        
     val fbCookie = request.cookies
     					  .filter(a => {a.name.indexOf("fbsr_") > -1})
     					  .map(a => a.value).mkString("")
-    
-    if( fbCookie.length() == 0 ){
-      sys.error("Sorry! You need to be logged in with Facebook!")
-    }
-    
-    println(fbCookie)
-    
-    */
-    
-    val viewResult = if( game.get.isRedeemed ){
-      Ok( views.html.dealover() )
-    }else{
-	    game.get.game match {
-	      case "golf" => Golf.play(game.get)
-	      case "dealnodeal" => DealOrNoDeal.render(game.get)
-	      case _ => sys.error("Unrecognized game!")
-	    }
+            
+    val viewResult = 
+      if( fbCookie.length() == 0 || Facebook.isFacebookCookieValid(fbCookie) == false ){
+        Redirect( routes.Application.fbLogin )
+      }else if( game.get.isRedeemed ){
+        Ok( views.html.dealover() )
+      }else{
+        DealOrNoDeal.render(game.get)
     }
     
     viewResult

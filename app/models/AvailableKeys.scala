@@ -28,7 +28,8 @@ case class AvailableKey(id: Int, publicKey: String, amount: Option[Double],
 
 object AvailableKeys {
   
-  def rowParser = {
+  private def rowParser = {
+    
     (int("id") ~ str("public_key") ~ get[Option[java.math.BigDecimal]]("amount") 
         ~ str("game") ~ str("redeem_key") ~ str("deal_board") ~ get[Boolean]("is_redeemed") ~ get[Option[String]]("fb_user_id"))
     .map(f => {      
