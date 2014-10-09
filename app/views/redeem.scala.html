@@ -1,40 +1,44 @@
 @* redeem Template File *@
 @(game: AvailableKey)
 
-@main("Redeem some coins!") {
-    <div class="container well-container golf-word-container">
+@main("Redeem some coins!", "sticky-footer") {
+    <div class="container no-header-container">
         <div class="row">
             <div class="col-md-12">
                 <div class="inner">
                     
                     <div class="row">
                         <div class="col-md-12">                    
-                            <div class="pull-left">
-                               <h3>Redeeming @game.amount Satoshi from @game.publicKey</h3>
+                            <div class="text-center">
+                               <h3>Redeeming @game.amount mBTC from @game.publicKey</h3>
                             </div>
                         </div>
                     </div>
                     
                     <div class="row margin-top">
                         <div class="col-md-6 col-md-offset-3">
-                        
-                            <div class="alert alert-success hide" data-provide="send-msg"></div>
-                        
-                            <form data-provide="redeem-form" method="POST" action="@routes.Application.doRedeem(game.redeemKey)">
-                                <div class="form-group">
-                                    <label for="email">Your Email address</label>
-                                    <div class="alert alert-danger hide" data-provide="error-email"></div>
-                                    <input type="email" name="email" class="form-control" id="email" placeholder="Your email address">
-                                </div>
-                                <div class="form-group">
-                                    <label for="key">Your Public Address (ex. 19RmoHjANGwoNr3g711iKpQGLWEhtGZM1c)</label>
-                                    <div class="alert alert-danger hide" data-provide="error-key"></div>
-                                    <input type="text" name="key" class="form-control" id="key" placeholder="Your public address">
-                                </div>                                                                
-                              <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">Redeem!</button>
-                              </div>                                
-                            </form>
+                            
+                            <div class="well">
+                            
+                                <div class="alert alert-success hide" data-provide="send-msg"></div>
+                            
+                                <form data-provide="redeem-form" method="POST" action="@routes.Application.doRedeem(game.redeemKey)">
+                                    <div class="form-group">
+                                        <label for="email">Your Email address</label>
+                                        <div class="alert alert-danger hide" data-provide="error-email"></div>
+                                        <input type="email" name="email" class="form-control" id="email" placeholder="Your email address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="key">Your Public Address (ex. 19RmoHjANGwoNr3g711iKpQGLWEhtGZM1c)</label>
+                                        <div class="alert alert-danger hide" data-provide="error-key"></div>
+                                        <input type="text" name="key" class="form-control" id="key" placeholder="Your public address">
+                                    </div>                                                                
+                                  <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block">Redeem!</button>
+                                  </div>                                
+                                </form>
+                            
+                            </div>
                             
                         </div>
                     </div>                    
