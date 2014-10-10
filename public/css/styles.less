@@ -451,3 +451,31 @@ html, body {
 .no-header-container {
     margin-top: 100px;    
 }
+
+.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto; } 
+.embed-container iframe, .embed-container object, .embed-container embed 
+{ position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+@media only screen  and (max-width : 768px) {
+	.footer {
+		height: auto;
+		.col-sm-7 {
+			text-align: center;
+		}
+		h2 {
+			margin-bottom: 0px;
+			text-align: center;
+		}	
+	}
+	
+	.homepage-about {
+		
+		.resources {
+			padding: 0px;
+		}
+		.text-right {
+			text-align: center;
+			margin-top: 20px;
+		}
+	}
+}
