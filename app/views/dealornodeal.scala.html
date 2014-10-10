@@ -244,15 +244,17 @@ function getPreviousActions(){
     var sortedBoxes = _.sortBy( _.filter(board.boxes, function(el){return el.playIndex ? true : false;}) , "playIndex");
     var dealIndex = [ 20, 15, 11, 8, 6, 5, 4, 3, 2 ];
     var pastOfferIndex = 0;
-    
-    for(var i = 0; i < sortedBoxes.length; i++){
-        sortedBoxes[i].type = "opened_box";
-        list.push( sortedBoxes[i] );
         
-        if( $.inArray(i, dealIndex) > -1 ){
+    for(var i = 0; i < sortedBoxes.length; i++){
+        
+        if( 26 - i == dealIndex[pastOfferIndex] ){
             list.push( {type: "offer", value: board.pastOffers[pastOfferIndex]} );
             pastOfferIndex += 1;
         }        
+        
+        sortedBoxes[i].type = "opened_box";
+        list.push( sortedBoxes[i] );                
+            
     }
     
     return list;
@@ -482,7 +484,7 @@ $(document).ready(function(){
         
         $.when(fetchDf, animateDf).then(function(){
         
-            $(li).find("span").html( board.lastAmount ).addClass("case-amount");
+            $(li).find("span").html( number_format(board.lastAmount) ).addClass("case-amount");
             
             window.setTimeout(function(){
                 $(".modal-backdrop").remove();

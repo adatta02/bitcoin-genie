@@ -128,7 +128,7 @@ case class DealOrNoDealBoard(boxes: List[DealOrNoDealBox], currentOffer: Option[
     		  "lastAmount" -> this.getLastAmount,
     		  "canSwitch" -> this.canSwitch,
     		  "yourBoxValue" -> this.getSelectedBoxValue,
-    		  "pastOffers" -> this.pastOffers.take(this.pastOffers.length-1))    
+    		  "pastOffers" -> this.pastOffers )    
   }
   
   def getLastAmount: Option[Double] = {
