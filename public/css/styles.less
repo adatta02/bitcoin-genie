@@ -169,6 +169,10 @@ html, body {
         color: yellow;
       }
       
+      .game-buttons {
+		float: right;
+      }
+      
       .btn-transparent {
         color: #535555;
         border: 1px solid #535555;
@@ -456,6 +460,10 @@ html, body {
 .embed-container iframe, .embed-container object, .embed-container embed 
 { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
+.mobile-amounts {
+	display: none;
+}
+
 @media only screen  and (max-width : 768px) {
 	.footer {
 		height: auto;
@@ -476,6 +484,44 @@ html, body {
 		.text-right {
 			text-align: center;
 			margin-top: 20px;
+		}
+	}
+	
+	.button-container {
+		margin-top: 10px;
+		
+		.btn-group.game-buttons {
+			float: none !important;
+			display: block !important;
+			text-align: center;
+			
+			.btn {
+				float: none;
+			}
+		}
+	}
+	
+	#boardTarget .remaining-amounts {
+		display: none;
+	}
+	
+	.deal-or-no-deal {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	
+	.mobile-amounts {
+		
+		.title {
+			margin-top: 0px;
+			font-size: 16px;
+			text-align: center;
+			color: #ffba00;
+			font-family: "GothamRounded-Bold",Arial,sans-serif;
+			
+			a {
+				color: #fff;
+			}
 		}
 	}
 }

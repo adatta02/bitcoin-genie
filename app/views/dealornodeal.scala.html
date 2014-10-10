@@ -47,10 +47,46 @@
 
 <script type="text/template" id="boardTemplate">
 
+<div data-provide="mobile-game-info" class="mobile-amounts container board-container">
+	<div class="row">
+		<div class="col-md-12">
+				
+			<div class="inner-board-container">
+			  
+			  <h3 class="title">Remaining Amounts | <a data-provide="close-mobile-amounts" href="#">Close</a></h3>
+			  
+              <div class="col-xs-6 remaining-amounts">
+                  <ul>
+                    <% for(var i = 0; i < Math.floor(board.amounts.length / 2); i ++){ %>
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>">
+                            <span><%= number_format(board.amounts[i]["amount"]) %></span>
+                        </li>
+                    <% } %>
+                  </ul>
+              </div>		
+		
+              <div class="col-xs-6 remaining-amounts">
+                  <ul>
+                    <% for(var i = Math.floor(board.amounts.length / 2); i < board.amounts.length; i ++){ %>                
+                        <li class="<%= board.amounts[i]["available"] ? "available" : "taken" %>">
+                            <span><%= number_format(board.amounts[i]["amount"]) %></span>
+                        </li>
+                    <% } %>
+                  </ul>
+              </div>		
+              
+              <div class="clearfix"></div>
+              
+			</div>
+			
+		</div>
+	</div>
+</div>
+
 <div id="boardTarget" class="container board-container">
     <div class="row">
 
-        <div class="col-md-3 col-lg-2 sidebar-container">
+        <div class="col-md-3 col-lg-2 hidden-xs sidebar-container">
         
           <div class="sidebar-profile">
             <div class="photo"><img data-provide="profile-image" src="<%= board.profileImage %>"></div>
@@ -92,12 +128,14 @@
                 <div class="col-md-9 col-lg-10">            
                   <div class="header"><img src="@routes.Assets.at("images/banner.png")"></div>            
                 </div>
-                <div class="col-md-3 col-lg-2">
-                    <div class="btn-group game-buttons pull-right">
+                <div class="col-md-3 col-lg-2 button-container">
+                    <div class="btn-group game-buttons">
                         <a data-provide="toggle-sound" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-volume-off"></span></a>
                         <a data-provide="get-help" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-question-sign"></span></a>              
                         <a data-provide="quit-game" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-off"></span></a>
-                    </div>          
+                        <a data-provide="game-info" href="#" class="btn btn-primary">Remaining Amounts</a>
+                    </div>
+                    <div class="clearfix"></div>
                 </div>         
             </div>
 
@@ -372,11 +410,23 @@ $(document).ready(function(){
 
   $("[data-provide='instructions']").modal( {show: true} );          
   
+  $("body").on("click", "[data-provide='game-info']", function(){
+	  $("#boardTarget").hide();
+	  $("[data-provide='mobile-game-info']").show();	  
+	  return false;
+  });  
+  
+  $("body").on("click", "[data-provide='close-mobile-amounts']", function(){
+	  $("#boardTarget").show();
+	  $("[data-provide='mobile-game-info']").hide();	  
+	  return false;	  
+  }); 
+  
   $("body").on("click", "[data-provide='get-help']", function(){
     $("[data-provide='instructions']").modal( {show: true} );
     return false;
   });    
-  
+    
   $("body").on("click", "[data-provide='redeem-btc']", function(){
   
     fetchJson({}, "@routes.DealOrNoDeal.getRedeemUrl(game.publicKey)").done(function(data){
