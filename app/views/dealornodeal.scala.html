@@ -53,8 +53,8 @@
         <div class="col-md-3 col-lg-2 sidebar-container">
         
           <div class="sidebar-profile">
-            <div class="photo"><img data-provide="profile-image" src=""></div>
-            <div class="username" data-provide="profile-name"></div>
+            <div class="photo"><img data-provide="profile-image" src="<%= board.profileImage %>"></div>
+            <div class="username" data-provide="profile-name"><%= board.firstName %></div>
           </div>
           
           <div class="your-case">
@@ -218,6 +218,7 @@ Howl.prototype.xPlay = function( onEndFn ){
 
 window.isSoundOn = true;
 var board = @Html(dealBoard.toString);
+var profile = {firstName: "", profileImage: ""};
 
 var bankerOfferClip = new Howl({
   urls: ["@routes.Assets.at("sound/old-telephone-bell-british-version.mp3")"],
@@ -291,6 +292,7 @@ function renderBoard(status){
     var rows = [ _.range(1, 7), _.range(7, 14), _.range(14, 21), _.range(21, 27) ];
     var template = _.template( $("#boardTemplate").html() );
     
+    $.extend(board, profile);
     $(".deal-or-no-deal").html( template({board: board, rows: rows, status: status}) );
 }
 
@@ -331,29 +333,42 @@ function updateBoard(){
   
 }
 
+var fbTimer = window.setTimeout(function(){
+    updateBoard();
+}, 2000);
+
 window.onFbLoaded = function(){
     
-    FB.getLoginStatus(function(loginResponse){    
+    var fbMeDeffered = $.Deferred();
+    var fbPictureDeffered = $.Deferred();
+    
+    window.clearTimeout(fbTimer);
+    
+    $.when(fbMeDeffered, fbPictureDeffered).done(function(){
+        updateBoard();
+    });
+    
+    FB.getLoginStatus(function(loginResponse){            
         
-        FB.api("/me", function(response){
-            $("[data-provide='profile-name']").html( response["first_name"] );
+        FB.api("/me", function(response){            
+            profile.firstName = response["first_name"];
+            fbMeDeffered.resolve();  
         });
         
         FB.api("/me/picture?height=160&width=160", function (response) {                                           
             if( response && !response.error) {
-              $("[data-provide='profile-image']").attr("src", response.data.url);                
+              profile.profileImage = response.data.url;                              
             }                       
-        });    
-    
+            fbPictureDeffered.resolve();
+        });
+            
     });     
   
 };
 
 $(document).ready(function(){      
 
-  $("[data-provide='instructions']").modal( {show: true} );
-        
-  updateBoard();
+  $("[data-provide='instructions']").modal( {show: true} );          
   
   $("body").on("click", "[data-provide='get-help']", function(){
     $("[data-provide='instructions']").modal( {show: true} );

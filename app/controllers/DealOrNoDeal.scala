@@ -36,6 +36,7 @@ object DealOrNoDeal extends Controller {
   def getRedeemUrl(publicKey: String) = Action(parse.json) {implicit request => {
     val game = AvailableKeys.findBy("public_key" -> publicKey).get
     val dealBoard = game.getDealOrNoDealBoard
+    
     val url = if( game.amount.isDefined ){            
       routes.Application.redeem(game.redeemKey).absoluteURL(false)
     }else{
@@ -93,7 +94,7 @@ object DealOrNoDeal extends Controller {
     }
     
     if( dealBoard.getSelectedBoxValue.isDefined ){
-      AvailableKeys.update(game, ("amount" -> dealBoard.getSelectedBoxValue.get.toString))
+      AvailableKeys.update(game, ("amount" -> updatedBoard.getSelectedBoxValue.get.toString))
     }
     
     val result = AvailableKeys
