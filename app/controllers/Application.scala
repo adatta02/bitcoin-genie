@@ -48,9 +48,8 @@ object Application extends Controller {
     }
     
     val transactionBlock = if( emailError == false && addressError._1 == false && isSend == true ){
-    // 5000 == 0.00005
-    	Play.application.plugin[BtcWalletPlugin]
-    		.get.sendAmountToAddress(address, game.get.amount.get)    
+    	// Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
+      "TEST MODE"
     }else{
       ""
     }
