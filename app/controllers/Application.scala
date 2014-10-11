@@ -40,7 +40,9 @@ object Application extends Controller {
     val address = request.body.\("key").as[String]
     val isSend = request.body.\("isSend").as[Boolean]
     
-    val addressError = Play.application.plugin[BtcWalletPlugin].get.checkIsAddressValid(address)
+    // val addressError = Play.application.plugin[BtcWalletPlugin].get.checkIsAddressValid(address)
+    val addressError = (false, false)
+    
     val emailError = if( """\b[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\b""".r.findFirstIn(email) == None ){
       true
     }else{
@@ -48,6 +50,7 @@ object Application extends Controller {
     }
     
     val transactionBlock = if( emailError == false && addressError._1 == false && isSend == true ){
+      AvailableKeys.update(game.get, ("user_email" -> email))
     	// Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
       "TEST MODE"
     }else{
@@ -80,8 +83,10 @@ object Application extends Controller {
     val viewResult = 
       if( Facebook.isFacebookCookieValid(request.cookies) == false ){
         Redirect( routes.Application.fbLogin )
-      }else if( game.get.isRedeemed ){
-        Ok( views.html.dealover() )
+      }else if( game.get.amount.isDefined ){
+        Ok( views.html.dealover(game.get) )
+      }else if( game.get.fbUserId.get != Facebook.getUserId(request.cookies) ){
+        Redirect( routes.DealOrNoDeal.startGame )
       }else{
         DealOrNoDeal.render(request, game.get)
     }

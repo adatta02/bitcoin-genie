@@ -1,19 +1,29 @@
 @* dealover Template File *@
-@(param: Any)
+@(game: AvailableKey)
 
-@main("Play a game!") {
+@main("Play a game!", "sticky-footer") {
  
-<div class="container well-container deal-nodeal-container">
+<div class="container no-header-container">
     <div class="row">
         <div class="col-md-12">
             <div class="inner"> 
                 <div class="row">
                     <div class="col-md-6 col-md-offset-3">
-                        <div class="alert alert-info text-center">
-                            <h3>Sorry! This key has already been played.</h3>
+                        <div class="alert alert-danger text-center">
+                            <h3>Sorry! This game has already been played.</h3>
                         </div>
                     </div>
                 </div>
+                
+                @if(game.isRedeemed == false){
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <a href="@routes.Application.redeem(game.redeemKey)"
+                                class="btn btn-block btn-primary">Redeem your BTC!</a>
+                        </div>
+                    </div>
+                }
+                
             </div>
         </div>
     </div>

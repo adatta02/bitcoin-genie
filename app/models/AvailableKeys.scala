@@ -8,7 +8,8 @@ import scala.collection._
 import play.api.libs.json._
 
 case class AvailableKey(id: Int, publicKey: String, amount: Option[Double], 
-						game: String, redeemKey: String, dealBoard: String, isRedeemed: Boolean, fbUserId: Option[String]){
+						game: String, redeemKey: String, dealBoard: String, 
+						isRedeemed: Boolean, fbUserId: Option[String], userEmail: Option[String]){
   
   def getReadableGame: String = {
     this.game match {
@@ -31,17 +32,19 @@ object AvailableKeys {
   private def rowParser = {
     
     (int("id") ~ str("public_key") ~ get[Option[java.math.BigDecimal]]("amount") 
-        ~ str("game") ~ str("redeem_key") ~ str("deal_board") ~ get[Boolean]("is_redeemed") ~ get[Option[String]]("fb_user_id"))
+        ~ str("game") ~ str("redeem_key") ~ str("deal_board") 
+        ~ get[Boolean]("is_redeemed") ~ get[Option[String]]("fb_user_id") ~ get[Option[String]]("user_email")
+    )
     .map(f => {      
       f match { 
-	  	case i~pk~a~g~k~b~ir~fb => {
+	  	case i~pk~a~g~k~b~ir~fb~em => {
 	  	  val amnt = if( a.isDefined ){
 	  		  Option[Double]( a.get.doubleValue() )
 	  	  }else{
 	  	    None
 	  	  }	  	  
 	  	  
-	  	  AvailableKey(i, pk, amnt, g, k, b, ir, fb)
+	  	  AvailableKey(i, pk, amnt, g, k, b, ir, fb, em)
 	  	}
       }
     })

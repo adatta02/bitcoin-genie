@@ -24,15 +24,8 @@ object DealOrNoDeal extends Controller {
         
     val dealBoard = game.getDealOrNoDealBoard
     val htmlJson = dealBoard.getJsonForView
-    val renderResult = if( game.fbUserId.get != Facebook.getUserId(request.cookies) ){
-      Redirect( routes.DealOrNoDeal.startGame )
-    }else if( game.isRedeemed ){
-      Ok( views.html.dealover() )
-    }else{
-      Ok( views.html.dealornodeal(game, htmlJson) )
-    }
     
-    renderResult
+    Ok( views.html.dealornodeal(game, htmlJson) )
   }
   
   def getRedeemUrl(publicKey: String) = Action(parse.json) {implicit request => {
