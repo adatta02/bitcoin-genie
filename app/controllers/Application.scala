@@ -83,7 +83,7 @@ object Application extends Controller {
       }else if( game.get.isRedeemed ){
         Ok( views.html.dealover() )
       }else{
-        DealOrNoDeal.render(game.get)
+        DealOrNoDeal.render(request, game.get)
     }
     
     viewResult

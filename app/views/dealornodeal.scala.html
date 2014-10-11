@@ -133,12 +133,23 @@
                         <a data-provide="toggle-sound" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-volume-off"></span></a>
                         <a data-provide="get-help" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-question-sign"></span></a>              
                         <a data-provide="quit-game" href="#" class="btn btn-transparent"><span class="glyphicon glyphicon-off"></span></a>
-                        <a data-provide="game-info" href="#" class="btn btn-primary">Remaining Amounts</a>
+                        <a data-provide="game-info" href="#" class="btn-remaining-amounts btn btn-primary">Remaining Amounts</a>
                     </div>
                     <div class="clearfix"></div>
                 </div>         
             </div>
-
+            
+            <div class="row your-case-container">
+                <div class="col-xs-12">
+                    <ul class="list-inline text-center">
+                        <li class="case-text">Your Case:</li>
+                        <li class="your-base">
+                            <%= board.selectedBox !== null ? (board.selectedBox + 1) : "Please pick one!" %>
+                        </li>                        
+                    </ul>
+                </div>
+            </div>
+            
             <div class="row inner-board-container">
 
               <div class="col-md-3 col-lg-2 remaining-amounts">

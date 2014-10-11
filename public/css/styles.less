@@ -464,7 +464,20 @@ html, body {
 	display: none;
 }
 
+.btn-remaining-amounts {
+    display: none
+}
+
+.your-case-container {
+    display: none;
+}
+
 @media only screen  and (max-width : 768px) {
+
+    .logo {
+        display: none;
+    }
+
 	.footer {
 		height: auto;
 		.col-sm-7 {
@@ -474,6 +487,11 @@ html, body {
 			margin-bottom: 0px;
 			text-align: center;
 		}	
+		
+		.link-list {
+		  font-size: 11px;
+		  text-align: center !important;
+		}
 	}
 	
 	.homepage-about {
@@ -497,6 +515,10 @@ html, body {
 			
 			.btn {
 				float: none;
+			}
+			
+			.btn-remaining-amounts {
+			     display: inline-block;
 			}
 		}
 	}
@@ -523,5 +545,24 @@ html, body {
 				color: #fff;
 			}
 		}
+	}
+	
+	.your-case-container {
+	   display: block;
+	   margin-top: 10px;
+	   
+	   ul {
+	       margin-bottom: 0px;
+	   }
+	   
+	   .case-text {
+	       font-size: 14px;
+            color: #ffba00;
+            font-family: "GothamRounded-Bold",Arial,sans-serif;	       
+	   }
+	   
+	   .your-base {
+	       color: #fff;
+	   }
 	}
 }

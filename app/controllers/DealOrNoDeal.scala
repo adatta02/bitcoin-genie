@@ -2,7 +2,7 @@ package controllers
 
 import util.Facebook
 import models._
-import play.api.mvc.{Action, Controller, Result, Cookie}
+import play.api.mvc.{Action, Controller, Result, Cookie, Request, AnyContent}
 import play.api.libs.json._
 
 object DealOrNoDeal extends Controller {
@@ -20,18 +20,20 @@ object DealOrNoDeal extends Controller {
         
   }}
   
-  def render(game: AvailableKey): Result = {      
+  def render(request: Request[AnyContent], game: AvailableKey): Result = {     
         
     val dealBoard = game.getDealOrNoDealBoard
     val htmlJson = dealBoard.getJsonForView
-    
-    if( game.isRedeemed ){
+    val renderResult = if( game.fbUserId.get != Facebook.getUserId(request.cookies) ){
+      Redirect( routes.DealOrNoDeal.startGame )
+    }else if( game.isRedeemed ){
       Ok( views.html.dealover() )
     }else{
       Ok( views.html.dealornodeal(game, htmlJson) )
     }
     
-  }  
+    renderResult
+  }
   
   def getRedeemUrl(publicKey: String) = Action(parse.json) {implicit request => {
     val game = AvailableKeys.findBy("public_key" -> publicKey).get
