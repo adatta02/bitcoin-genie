@@ -13,6 +13,10 @@ import play.api.Play.current
 
 object Application extends Controller {  
   
+  def about = Action {implicit request => {
+    Ok( views.html.about() )
+  }}
+  
   def fbLogin = Action { implicit request => {    
     
     Ok( views.html.fbLogin() )

@@ -3,7 +3,8 @@
 # ~~~~
 
 GET     /                           controllers.Application.index()
-GET     /login                           controllers.Application.fbLogin()
+GET     /login                      controllers.Application.fbLogin()
+GET     /about                      controllers.Application.about()
 GET     /game/:publicKey            controllers.Application.game(publicKey: String)
 GET     /redeem/:key                controllers.Application.redeem(key: String)
 POST    /do-redeem/:key             controllers.Application.doRedeem(key: String)

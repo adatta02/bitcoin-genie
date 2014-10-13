@@ -10,7 +10,14 @@
                     <p>Because we do, and we're hooking you up!</p>
                 </div>
             </div>
-        </div>
+            
+            <div class="row">
+            	<div class="col-md-6 col-md-offset-3 text-center">
+			        <div class="down-arrow-container"><a href="#" data-provide="scroll-down"><i class="fa fa-angle-double-down"></i></a></div>            	
+            	</div>
+            </div>
+        </div>        
+        
     </div>
     
     <div class="homepage-about">
@@ -46,10 +53,32 @@
 						</div>
                 </div>
             </div>
+
+            <div class="row get-coin-row">
+                <div class="col-md-6 col-md-offset-3 alert alert-info">
+                	<div class="text-center">
+						<h2>Get your FREE Bitcoin</h2>
+						<p>We're giving away coins and here's how you can get some:</p>
+					</div>
+					
+					<ol>
+						<li>Login with Facebook</li>
+						<li>Play <a target="_blank" href="http://en.wikipedia.org/wiki/Deal_or_No_Deal_%28U.S._game_show%29">"Deal or No Deal"</a></li>
+						<li>Withdraw anything you win to your wallet</li>
+					</ol>
+					
+					<a class="btn btn-block btn-social btn-facebook" href="#" data-provide="fb-login">
+						<i class="fa fa-facebook"></i> Login and play!
+					</a>        
+					
+				</div>
+			</div>
             
             <div class="row info-row">
                 <div class="col-md-8 col-md-offset-2">
-                
+                	
+                	<h2>FAQ</h2>
+                	
                     <ul class="faq-list listless">
                         <li>
                             <div class="question">Got it! What's this site all about then?</div>
@@ -84,7 +113,8 @@
                             
                             <a class="btn btn-block btn-social btn-facebook" href="#" data-provide="fb-login">
                                 <i class="fa fa-facebook"></i> Login and play!
-                            </a>                    
+                            </a>        
+                                        
                         </div>
                     </div>
                                         
@@ -120,6 +150,12 @@
       $("[data-provide='fb-login']").click(function(){
           FB.login(handleFbResponse);
           return false;
+      });
+      
+      $("[data-provide='scroll-down']").click(function(){
+      	var aTag = $(".homepage-about h1:first");
+        $('html,body').animate({scrollTop: aTag.offset().top * .8},'slow');      
+      	return false;
       });
       
   });

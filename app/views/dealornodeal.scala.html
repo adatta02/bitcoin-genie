@@ -356,7 +356,7 @@ function showBankerOffer(){
         .html("The banker is contacting you right now with an offer.");
     
     bankerOfferClip.xPlay(function(){
-        window.setTimeout(function(){ bankerOfferClip.onend(); }, 3000);
+        window.setTimeout(function(){ bankerOfferClip.onend(); }, 2000);
     });         
 }
 
@@ -384,9 +384,13 @@ function updateBoard(){
   
 }
 
-var fbTimer = window.setTimeout(function(){
-    updateBoard();
-}, 2000);
+function endBriefcaseAnimation(){
+  	$(".case-container").data("animating", null);
+  	$(".modal-backdrop").remove();
+  	updateBoard();  
+}
+
+var fbTimer = window.setTimeout(function(){ updateBoard(); }, 2000);
 
 window.onFbLoaded = function(){
     
@@ -400,6 +404,13 @@ window.onFbLoaded = function(){
     });
     
     FB.getLoginStatus(function(loginResponse){            
+        
+        loginResponse.status = "connected";
+        
+        if (loginResponse.status != 'connected') {
+        	window.location = "@routes.Application.fbLogin";
+        	return false;       
+        }                
         
         FB.api("/me", function(response){            
             profile.firstName = response["first_name"];
@@ -452,8 +463,9 @@ $(document).ready(function(){
   });
   
   $("body").on("click", "[data-provide='take-deal']", function(){
+  
     fetchJson({}, "@routes.DealOrNoDeal.takeDeal(game.publicKey)").done(function(data){
-        window.url = data.url;
+        window.location = data.url;
     });
     
     return false;  
@@ -500,9 +512,11 @@ $(document).ready(function(){
     return false;  
   });
   
+  $("body").on("click", ".modal-backdrop", endBriefcaseAnimation);
+  
   $("body").on("click", "[data-provide='briefcase']", function(){
     
-    if( $(".case-container").hasClass("disabled") ){
+    if( $(".case-container").hasClass("disabled") || $(".case-container").data("animating") ){
         return false;
     }
     
@@ -521,6 +535,9 @@ $(document).ready(function(){
             updateBoard();            
         });                            
     }else{
+        
+        $(".case-container").data("animating", true);
+        
         var fetchDf = fetchJson( {action: "openBox", pos: parseInt(pos)} ).done(function(data){ 
             board = data;
         });
@@ -543,22 +560,15 @@ $(document).ready(function(){
         var left = (($(".board-row").width() / 2) - 128);        
         $(li).animate({top: 0, left: left, "width": 256, "height": 228}, function(){animateDf.resolve();});
         
-        $.when(fetchDf, animateDf).then(function(){
-        
-            $(li).find("span").html( number_format(board.lastAmount) ).addClass("case-amount");
-            
-            window.setTimeout(function(){
-                $(".modal-backdrop").remove();
-                updateBoard();
-            }, 3000);
-                                
+        $.when(fetchDf, animateDf).then(function(){        
+            $(li).find("span").html( number_format(board.lastAmount) ).addClass("case-amount");            
+            window.setTimeout(endBriefcaseAnimation, 2000);                                
         });        
         
     }
     
     return false;
-  });        
-  
+  });          
   
 });
 </script>
