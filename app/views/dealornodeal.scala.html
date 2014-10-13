@@ -403,9 +403,7 @@ window.onFbLoaded = function(){
         updateBoard();
     });
     
-    FB.getLoginStatus(function(loginResponse){            
-        
-        loginResponse.status = "connected";
+    FB.getLoginStatus(function(loginResponse){                    
         
         if (loginResponse.status != 'connected') {
         	window.location = "@routes.Application.fbLogin";
