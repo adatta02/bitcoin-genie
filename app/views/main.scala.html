@@ -100,27 +100,6 @@ window.fbAsyncInit = function() {
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
-  function handleFbResponse(response){
-      
-      $("[data-provide='fb-error']").addClass("hidden");
-      
-      if (response.status === 'connected') {
-          window.location = "@routes.DealOrNoDeal.startGame";
-      } else if (response.status === 'not_authorized') {
-          $("[data-provide='fb-error']").html("Sorry! You need to authorize this app to play.").removeClass("hidden");
-          document.getElementById('status').innerHTML = 'Please log ' + 'into this app.';
-      } else {        
-          $("[data-provide='fb-error']").html("Sorry! You need to login and authorize this app to play.").removeClass("hidden");
-      }
-      
-  }
-  
-  $(document).ready(function(){
-      $("[data-provide='fb-login']").click(function(){
-          FB.login(handleFbResponse);
-          return false;
-      });      
-  });
 </script>   
 </body>
 </html>

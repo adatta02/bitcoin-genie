@@ -72,7 +72,7 @@ object Application extends Controller {
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }               
-        
+    
     Ok( views.html.redeem(game.get) )
   }}
     

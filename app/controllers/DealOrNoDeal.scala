@@ -7,17 +7,45 @@ import play.api.libs.json._
 
 object DealOrNoDeal extends Controller {
 
-  def startGame = Action {implicit request => {
+  def getGame = Action {implicit request => {
     
-    if( Facebook.isFacebookCookieValid(request.cookies) ){
+    if( !Facebook.isFacebookCookieValid(request.cookies) ){
+      sys.error("Sorry! There's something wrong with your Facebook login.")
+    }
+    
+    val fbId = Facebook.getUserId(request.cookies)
+    val existingGame = AvailableKeys.findBy("fb_user_id" -> fbId)
+    
+    if( existingGame.isDefined ){
+      Redirect( routes.Application.game(existingGame.get.publicKey) )
+    }else{
+      Redirect( routes.Application.index() )
+    }
+    
+  }}  
+  
+  def startGame = Action(parse.json) {implicit request => {
+    
+    val emailRegex = """\b[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\b""".r
+    val email = request.body.\("email").as[String]    
+        
+    val errors = List( (emailRegex.findFirstIn(email) == None, "Sorry! Invalid email address."), 
+    				   ("""@tufts\.edu$""".r.findFirstIn(email) == None, "Sorry! That's an invalid @tufts.edu address."), 
+    				   (!Facebook.isFacebookCookieValid(request.cookies), "Sorry! Something is wrong with your Facebook login.") )
+    				 .filter(a => a._1 == true)
+        
+    val result = if( errors.length == 0 ){
       val fbId = Facebook.getUserId(request.cookies)
       val game = AvailableKeys.getGameForFBUserId( fbId )
       
-      Redirect( routes.Application.game(game.publicKey) )      
+      Json.obj( "isError" -> false )
+      // Redirect( routes.Application.game(game.publicKey) )      
     }else{
-      Redirect( routes.Application.fbLogin )
+      Json.obj( "isError" -> true, "errors" -> errors.map(a => a._2) )
     }         
-        
+    
+    Ok( Json.toJson( result ) )    
+    
   }}
   
   def render(request: Request[AnyContent], game: AvailableKey): Result = {     
@@ -46,7 +74,7 @@ object DealOrNoDeal extends Controller {
     val dealBoard = game.getDealOrNoDealBoard
     
     if(dealBoard.currentOffer.isDefined){
-    	AvailableKeys.update(game, ("amount" -> dealBoard.currentOffer.get.toString))
+    	AvailableKeys.completeGame(game, dealBoard.currentOffer.get.toString)
     }else{
       sys.error("Sorry! The game has no offer.")
     }
@@ -89,7 +117,7 @@ object DealOrNoDeal extends Controller {
     }
     
     if( dealBoard.getSelectedBoxValue.isDefined ){
-      AvailableKeys.update(game, ("amount" -> updatedBoard.getSelectedBoxValue.get.toString))
+      AvailableKeys.completeGame(game, updatedBoard.getSelectedBoxValue.get.toString)
     }
     
     val result = AvailableKeys

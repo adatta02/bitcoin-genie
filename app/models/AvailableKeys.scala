@@ -73,6 +73,18 @@ object AvailableKeys {
     })    
   }
   
+  def completeGame(game: AvailableKey, amount: String): AvailableKey = {    
+    val updatedGame = this.update(game, ("amount" -> amount))        
+    val sql = """INSERT INTO played_game (public_key, amount, deal_board, fb_user_id)
+    			 SELECT public_key, amount, deal_board, fb_user_id FROM available_key WHERE id = {id}"""
+        
+    DB.withConnection(implicit c => {
+      SQL(sql).on("id" -> game.id).executeInsert()
+    })
+    
+    updatedGame
+  }
+  
   def update(game: AvailableKey, params: Tuple2[String, String]*): AvailableKey = {
     val sql = "UPDATE available_key SET " + params.map(a => {a._1 + " = " + "{" + a._1 + "}"}).mkString(", ") + " WHERE id = {id}"
     val idParams = params ++ Seq( ("id" -> game.id) )

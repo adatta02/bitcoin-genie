@@ -2,24 +2,17 @@
 
 @main("Got BTC?", "homepage") {
     
-    <div class="homepage-splash">
+    <div class="homepage-bg-container">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 col-md-offset-3 text-center">
-                    <h1>Got Bitcoin?</h1>
+            <div class="col-md-6 col-md-offset-3 text-center">
+                <div class="slide-body-container">
+                    <h1>Hey Jumbos, got Bitcoin?</h1>
                     <p>Because we do, and we're hooking you up!</p>
                 </div>
             </div>
-            
-            <div class="row">
-            	<div class="col-md-6 col-md-offset-3 text-center">
-			        <div class="down-arrow-container"><a href="#" data-provide="scroll-down"><i class="fa fa-angle-double-down"></i></a></div>            	
-            	</div>
-            </div>
-        </div>        
+        </div>
+    </div>    
         
-    </div>
-    
     <div class="homepage-about">
         <div class="container">
         
@@ -55,22 +48,41 @@
             </div>
 
             <div class="row get-coin-row">
-                <div class="col-md-6 col-md-offset-3 alert alert-info">
+                <div class="col-md-8 col-md-offset-2 alert alert-info">
                 	<div class="text-center">
 						<h2>Get your FREE Bitcoin</h2>
-						<p>We're giving away coins and here's how you can get some:</p>
+						<p>We're giving away coins to anyone with a @@tufts.edu email address and here's how you can get some:</p>
 					</div>
 					
 					<ol>
-						<li>Login with Facebook</li>
-						<li>Play <a target="_blank" href="http://en.wikipedia.org/wiki/Deal_or_No_Deal_%28U.S._game_show%29">"Deal or No Deal"</a></li>
+                        <li>Get a Bitcoin wallet from <a href="https://www.circle.com/en" target="_blank">Circle</a></li>
+						<li>Sign up with Facebook and your @@tufts.edu email address</li>
+						<li>Check your email and play <a target="_blank" href="http://en.wikipedia.org/wiki/Deal_or_No_Deal_%28U.S._game_show%29">"Deal or No Deal"</a></li>
 						<li>Withdraw anything you win to your wallet</li>
 					</ol>
 					
 					<a class="btn btn-block btn-social btn-facebook" href="#" data-provide="fb-login">
-						<i class="fa fa-facebook"></i> Login and play!
+						<i class="fa fa-facebook"></i> Sign up and play!
 					</a>        
 					
+                    <div class="alert alert-danger hidden" data-provide="fb-error"></div>
+                    
+                    <div class="email-form hidden">                    
+                        <form data-provide="email-form" method="POST" action="">
+                            <div class="form-group">
+                                <label for="email">Great, now we just need your @@tufts.edu email address</label>
+                                <div class="alert alert-danger hide" data-provide="error-email"></div>
+                                <input type="email" name="email" class="form-control" id="email" placeholder="Your email address">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit</button>
+                            </div>                                              
+                        </form>    
+                    </div>
+                    
+                    <div data-provide="game-started" class="success-msg text-success hidden text-center">
+                        <h3>Great! We just sent you an email with a link to play a game!</h3>
+                    </div>
 				</div>
 			</div>
             
@@ -104,20 +116,8 @@
                             <div class="question ">Why do I need to login with Facebook?</div>
                             <div class="answer">Well, we're giving away money and it's unfortunately the easiest way to make it harder to "game" the system and double dip.</div>
                         </li>                                                
-                    </ul>
-                    
-                    <div class="alert alert-danger hidden" data-provide="fb-error"></div>
-                    
-                    <div class="row fb-login-container">
-                        <div class="col-md-6 col-md-offset-3">
-                            
-                            <a class="btn btn-block btn-social btn-facebook" href="#" data-provide="fb-login">
-                                <i class="fa fa-facebook"></i> Login and play!
-                            </a>        
-                                        
-                        </div>
-                    </div>
-                                        
+                    </ul>                                       
+                                                            
                     <div class="text-center">
                         Other questions? Drop us a line <a href="mailto:contact@@setfive.com">contact@@setfive.com</a>
                     </div>
@@ -133,8 +133,9 @@
       
 	  $("[data-provide='fb-error']").addClass("hidden");
       
-      if (response.status === 'connected') {
-          window.location = "@routes.DealOrNoDeal.startGame";
+      if (response.status === 'connected') {          
+          $("[data-provide='fb-login']").hide();
+          $(".email-form").removeClass("hidden");          
       } else if (response.status === 'not_authorized') {
           $("[data-provide='fb-error']").html("Sorry! You need to authorize this app to play.").removeClass("hidden");
           document.getElementById('status').innerHTML = 'Please log ' + 'into this app.';
@@ -156,6 +157,27 @@
       	var aTag = $(".homepage-about h1:first");
         $('html,body').animate({scrollTop: aTag.offset().top * .8},'slow');      
       	return false;
+      });
+      
+      $("[data-provide='email-form']").submit(function(){
+        
+        var payload = {email: $(this).find("[name='email']").val()};
+        $("[data-provide='fb-error']").addClass("hidden");
+        
+        $.ajax({url: "@routes.DealOrNoDeal.startGame", type: "POST", data: JSON.stringify(payload), 
+                contentType: "application/json; charset=utf-8", dataType: "json"})
+         .done(function(data){
+            if( data.isError ){                
+                var html = $("<ul>");                
+                $.each(data.errors, function(i, val){ $("<li>" + val + "</li>").appendTo(html); });                
+                $("[data-provide='fb-error']").removeClass("hidden").html( html );
+            }else{
+              $(".email-form").hide();
+              $("[data-provide='game-started']").removeClass("hidden");
+            }
+         });                 
+                      
+        return false;
       });
       
   });
