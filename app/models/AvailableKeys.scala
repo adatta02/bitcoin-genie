@@ -85,6 +85,10 @@ object AvailableKeys {
     updatedGame
   }
   
+  def markRedeemed(game: AvailableKey): AvailableKey = {
+    this.update(game, ("is_redeemed" -> "1"))
+  }
+  
   def update(game: AvailableKey, params: Tuple2[String, String]*): AvailableKey = {
     val sql = "UPDATE available_key SET " + params.map(a => {a._1 + " = " + "{" + a._1 + "}"}).mkString(", ") + " WHERE id = {id}"
     val idParams = params ++ Seq( ("id" -> game.id) )
@@ -96,7 +100,7 @@ object AvailableKeys {
     this.find( game.id ).get
   }
   
-  def getGameForFBUserId(fbUserId: String): AvailableKey = {
+  def getGameForFBUserId(fbUserId: String, email: String): AvailableKey = {
     val existingGame = this.findBy("fb_user_id" -> fbUserId)
     val fbUserGame = if( existingGame.isDefined ){
       existingGame.get
@@ -105,7 +109,7 @@ object AvailableKeys {
         SQL("SELECT * FROM available_key WHERE fb_user_id IS NULL LIMIT 1").as(rowParser.singleOpt)
       })
       
-      this.update(newGame.get, ("fb_user_id", fbUserId))      
+      this.update(newGame.get, ("fb_user_id" -> fbUserId), ("user_email" -> email))      
     }
      
     fbUserGame

@@ -36,7 +36,7 @@ object DealOrNoDeal extends Controller {
         
     val result = if( errors.length == 0 ){
       val fbId = Facebook.getUserId(request.cookies)
-      val game = AvailableKeys.getGameForFBUserId( fbId )
+      val game = AvailableKeys.getGameForFBUserId( fbId, email )
       
       Json.obj( "isError" -> false )
       // Redirect( routes.Application.game(game.publicKey) )      

@@ -39,40 +39,33 @@ object Application extends Controller {
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }               
-    
-    val email = request.body.\("email").as[String]
+        
     val address = request.body.\("key").as[String]
     val isSend = request.body.\("isSend").as[Boolean]
     
     // val addressError = Play.application.plugin[BtcWalletPlugin].get.checkIsAddressValid(address)
     val addressError = (false, false)
-    
-    val emailError = if( """\b[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\b""".r.findFirstIn(email) == None ){
-      true
-    }else{
-      false
-    }
-    
-    val transactionBlock = if( emailError == false && addressError._1 == false && isSend == true ){
-      AvailableKeys.update(game.get, ("user_email" -> email))
+        
+    val transactionBlock = if( game.get.isRedeemed == false && addressError._1 == false && isSend == true ){
     	// Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
+      AvailableKeys.markRedeemed(game.get)
       "TEST MODE"
     }else{
       ""
     }
     
-    Ok( Json.toJson( Json.obj("emailError" -> emailError, "transactionBlock" -> transactionBlock,
+    Ok( Json.toJson( Json.obj("transactionBlock" -> transactionBlock, 
     						  "addressError" -> addressError._1, 
     						  "addressException" -> addressError._2)) )
   }}
   
   def redeem(key: String) = Action { implicit request => {
     
-    val game = AvailableKeys.findBy( ("redeem_key" -> key) )
+    val game = AvailableKeys.findBy( ("redeem_key" -> key) )    
     if( game.isEmpty ){
       sys.error("Sorry! That key doesn't exist")
     }               
-    
+        
     Ok( views.html.redeem(game.get) )
   }}
     

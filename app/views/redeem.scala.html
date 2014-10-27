@@ -27,28 +27,28 @@
                     <div class="row margin-top">
                         <div class="col-md-6 col-md-offset-3">
                             
-                            <div class="well">
-                            
-                                <div class="alert alert-success hide" data-provide="send-msg"></div>
-                            
-                                <form data-provide="redeem-form" method="POST" action="@routes.Application.doRedeem(game.redeemKey)">
-                                    <div class="form-group">
-                                        <label for="email">Your Email address</label>
-                                        <div class="alert alert-danger hide" data-provide="error-email"></div>
-                                        <input type="email" name="email" class="form-control" id="email" placeholder="Your email address">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="key">Your Public Address (ex. 19RmoHjANGwoNr3g711iKpQGLWEhtGZM1c)</label>
-                                        <div class="alert alert-danger hide" data-provide="error-key"></div>
-                                        <input type="text" name="key" class="form-control" id="key" placeholder="Your public address">
-                                    </div>                                                                
-                                  <div class="form-group">
-                                    <button type="submit" class="btn btn-primary btn-lg btn-block">Redeem!</button>
-                                  </div>                                
-                                </form>
-                            
-                            </div>
-                            
+                            @if(game.isRedeemed == false){                                                           
+                                <div class="well">
+                                
+                                    <div class="alert alert-success hide" data-provide="send-msg"></div>
+                                
+                                    <form data-provide="redeem-form" method="POST" action="@routes.Application.doRedeem(game.redeemKey)">
+                                        <div class="form-group">
+                                            <label for="key">Your Public Address (ex. 19RmoHjANGwoNr3g711iKpQGLWEhtGZM1c)</label>
+                                            <div class="alert alert-danger hide" data-provide="error-key"></div>
+                                            <input type="text" name="key" class="form-control" id="key" placeholder="Your public address">
+                                        </div>                                                                
+                                      <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-lg btn-block">Redeem!</button>
+                                      </div>                                
+                                    </form>
+                                
+                                </div>
+                            }else{
+                                <div class="alert alert-danger text-center">
+                                    These coins have already been redeemed.
+                                </div>
+                            }
                         </div>
                     </div>                    
                     
@@ -64,28 +64,25 @@
 
           var form = $("[data-provide='redeem-form']");
           var url = form.attr("action");
-          var payload = {isSend: isSend, email: form.find("[name='email']").val(), key: form.find("[name='key']").val()};
+          var payload = {isSend: isSend, key: form.find("[name='key']").val()};
           
           $.ajax({url: url, type: "POST", data: JSON.stringify(payload), contentType: "application/json; charset=utf-8", dataType: "json",      
           }).done(function(data){
 
               if( isSend ){
-            	  $("[data-provide='send-msg']").html("Your coins are on the way! Transaction ID: " + data.transactionBlock);
+            	  $("[data-provide='send-msg']").html("Your coins are on the way! Transaction ID: " + data.transactionBlock);                  
               }else{
-                  $("[data-provide='error-email'], [data-provide='error-key']").addClass("hide");
-                  
-                  if( data.emailError ){
-                      $("[data-provide='error-email']").html("That isn't a valid email address.").removeClass("hide");
-                  }
-    
+                  $("[data-provide='error-key']").addClass("hide");
+                      
                   if( data.addressError ){
                       $("[data-provide='error-key']").html("That isn't a valid Bitcoin address. " + data.addressException).removeClass("hide");
                   }
 
-                  if( data.emailError == false && data.addressError == false ){
+                  if( data.addressError == false ){
                 	  $("[data-provide='send-msg']")
                         .html("We're sending your coins now...waiting for the transaction to broadcast (this might take a few minutes).")
                         .removeClass("hide");
+                	  $("[data-provide='redeem-form']").hide();
                       submitRedeemForm( true );
                   }                  
               }

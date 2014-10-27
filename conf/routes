@@ -12,7 +12,8 @@ POST    /do-redeem/:key             controllers.Application.doRedeem(key: String
 POST    /golf/get-hash                   controllers.Golf.getHash()
 GET     /golf/random-phrases             controllers.Golf.getRandomPhrases()
 
-POST     /start-game                        controllers.DealOrNoDeal.startGame()
+GET     /get-game                        controllers.DealOrNoDeal.getGame()
+POST    /start-game                        controllers.DealOrNoDeal.startGame()
 POST    /play-deal/:publicKey              controllers.DealOrNoDeal.playDeal(publicKey: String)
 POST    /take-deal/:publicKey              controllers.DealOrNoDeal.takeDeal(publicKey: String)
 POST    /get-redeem-key/:publicKey              controllers.DealOrNoDeal.getRedeemUrl(publicKey: String)
