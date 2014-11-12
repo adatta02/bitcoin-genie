@@ -26,20 +26,12 @@ object DealOrNoDeal extends Controller {
     
   }}  
   
-  def startGame = Action(parse.json) {implicit request => {
+  def sendUserInviteEmail(email: String)(implicit request: Request[JsValue]): Boolean = {
     
-    val emailRegex = """\b[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\b""".r
-    val email = request.body.\("email").as[String]    
-        
-    val errors = List( (emailRegex.findFirstIn(email) == None, "Sorry! Invalid email address."), 
-    				   ("""@tufts\.edu$|@setfive\.com$""".r.findFirstIn(email) == None, "Sorry! That's an invalid @tufts.edu address."), 
-    				   (!Facebook.isFacebookCookieValid(request.cookies), "Sorry! Something is wrong with your Facebook login.") )
-    				 .filter(a => a._1 == true)
-        
-    val result = if( errors.length == 0 ){
       val fbId = Facebook.getUserId(request.cookies)
       val game = AvailableKeys.getGameForFBUserId( fbId, email )     
       
+      request.headers
       val emailText = 
 """Hey-
 
@@ -60,9 +52,24 @@ www.setfive.com | @setfive
             
       mail.setFrom("btc-deal@setfive.com")
       mail.setSubject("BTC Deal: Your Deal or No Deal Link")
-      mail.setRecipient(email)
+      mail.setRecipient(email)      
       mail.send( emailText )
       
+      true
+  }
+  
+  def startGame = Action(parse.json) {implicit request => {
+    
+    val emailRegex = """\b[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\b""".r
+    val email = request.body.\("email").as[String]    
+        
+    val errors = List( (emailRegex.findFirstIn(email) == None, "Sorry! Invalid email address."), 
+    				   ("""@tufts\.edu$|@setfive\.com$""".r.findFirstIn(email) == None, "Sorry! That's an invalid @tufts.edu address."), 
+    				   (!Facebook.isFacebookCookieValid(request.cookies), "Sorry! Something is wrong with your Facebook login.") )
+    				 .filter(a => a._1 == true)
+        
+    val result = if( errors.length == 0 ){
+      sendUserInviteEmail(email)      
       Json.obj( "isError" -> false )     
     }else{
       Json.obj( "isError" -> true, "errors" -> errors.map(a => a._2) )

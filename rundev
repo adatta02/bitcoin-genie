@@ -1,0 +1,2 @@
+~run -Dconfig.resource=dev.conf
+
