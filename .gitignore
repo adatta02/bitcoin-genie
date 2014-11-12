@@ -22,3 +22,4 @@ app_wallet.data
 wallet-kit.spvchain
 wallet-kit.wallet
 config.ini
+conf/dev.conf
