@@ -59,7 +59,7 @@ object Application extends Controller {
         
     val transactionBlock = if( game.get.isRedeemed == false && addressError._1 == false && isSend == true ){
       AvailableKeys.markRedeemed(game.get)
-      Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
+      Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.getBtcAmount)
     }else{
       ""
     }
@@ -89,7 +89,7 @@ object Application extends Controller {
                     
     val viewResult = 
       if( Facebook.isFacebookCookieValid(request.cookies) == false ){
-        Redirect( routes.Application.fbLogin )
+        Redirect( routes.Application.index )
       }else if( game.get.amount.isDefined ){
         Ok( views.html.dealover(game.get) )
       }else if( game.get.fbUserId.get != Facebook.getUserId(request.cookies) ){

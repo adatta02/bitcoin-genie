@@ -11,6 +11,19 @@ case class AvailableKey(id: Int, publicKey: String, amount: Option[Double],
 						game: String, redeemKey: String, dealBoard: String, 
 						isRedeemed: Boolean, fbUserId: Option[String], userEmail: Option[String]){
   
+  def getBtcAmount: Double = {
+    if( this.amount.isEmpty ){
+      -1
+    }else{
+      (this.amount.get * AvailableKeys.MAX_BTC) / 1000000
+    }
+  }
+  
+  def getMilliBtcAmount: Double = {
+    
+    this.getBtcAmount * 1000
+  }
+  
   def getReadableGame: String = {
     this.game match {
       case "golf" => "Hash Golf"
@@ -28,6 +41,8 @@ case class AvailableKey(id: Int, publicKey: String, amount: Option[Double],
 }
 
 object AvailableKeys {
+  
+  val MAX_BTC = .023
   
   private def rowParser = {
     
