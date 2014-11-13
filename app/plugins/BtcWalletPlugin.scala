@@ -33,13 +33,7 @@ class BtcWalletPlugin(app: Application) extends Plugin {
     val log = LoggerFactory.getLogger(this.getClass());
     
     this.kit.startAsync()
-    this.kit.awaitRunning()
-    
-    /*
-    val oldWallet = Wallet.loadFromFile( new File("/home/ashish/workspace_java/bitcoinj-runner/app_wallet.data") )
-    val oldKey = oldWallet.getImportedKeys.asScala.find(a => a.toAddress( TestNet3Params.get() ).toString() == "n1vvwD5VKBGsB3yhc9kW746Fb31hiKbZM6")    
-    kit.wallet.importKey( oldKey.get )
-    */
+    this.kit.awaitRunning()    
     
     println( "BALANCE: " + kit.wallet.getBalance )
   }
@@ -48,8 +42,16 @@ class BtcWalletPlugin(app: Application) extends Plugin {
     this.kit.stopAsync()
   }   
   
+  def getRecieveAddress: JsObject = {
+    Json.obj("address" -> this.kit.wallet.currentReceiveAddress.toString)
+  }
+  
   def getWalletAsJson: JsObject = {
+    val addresses = this.kit.wallet.getWatchedAddresses.asScala.map( a => a.toString )
+    val transactions = this.kit.wallet.getTransactions(false).asScala.map( a => a.getHashAsString() )
     
+    Json.obj( "balance" -> this.kit.wallet.getBalance.toFriendlyString, 
+    		  "addresses" -> addresses, "transactions" -> transactions )
   }
   
   def checkIsAddressValid(address: String): Tuple2[Boolean, String] = {
@@ -80,7 +82,7 @@ class BtcWalletPlugin(app: Application) extends Plugin {
 	      }
 	    }, MoreExecutors.sameThreadExecutor())
 	    
-	    ""
+	    res.tx.getHashAsString
     }catch{
       case _:Throwable => {""} 
     }

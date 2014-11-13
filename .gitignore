@@ -21,5 +21,6 @@ activator*
 app_wallet.data
 wallet-kit.spvchain
 wallet-kit.wallet
+btc-deal*
 config.ini
 conf/dev.conf

@@ -8,7 +8,7 @@ import com.typesafe.plugin._
 import play.api.Play.current
 
 object DealOrNoDeal extends Controller {
-
+  
   def getGame = Action {implicit request => {
     
     if( !Facebook.isFacebookCookieValid(request.cookies) ){

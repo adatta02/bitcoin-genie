@@ -33,6 +33,18 @@ object Application extends Controller {
     Ok("Ok")
   }
   
+  def getWalletStatus(action: String) = Action {implicit request => {
+    
+    val result = action match {
+      case "status" => Play.application.plugin[BtcWalletPlugin].get.getWalletAsJson
+      case "receiveAddress" => Play.application.plugin[BtcWalletPlugin].get.getRecieveAddress
+      case _=> Json.obj("msg" -> "Unknown action")
+    }
+    
+    
+    Ok( Json.toJson(result) )
+  }}  
+  
   def doRedeem(redeemKey: String) = Action(parse.json) {implicit request => {
     
     val game = AvailableKeys.findBy( ("redeem_key" -> redeemKey) )
@@ -43,13 +55,11 @@ object Application extends Controller {
     val address = request.body.\("key").as[String]
     val isSend = request.body.\("isSend").as[Boolean]
     
-    // val addressError = Play.application.plugin[BtcWalletPlugin].get.checkIsAddressValid(address)
-    val addressError = (false, false)
+    val addressError = Play.application.plugin[BtcWalletPlugin].get.checkIsAddressValid(address)
         
     val transactionBlock = if( game.get.isRedeemed == false && addressError._1 == false && isSend == true ){
-    	// Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
       AvailableKeys.markRedeemed(game.get)
-      "TEST MODE"
+      Play.application.plugin[BtcWalletPlugin].get.sendAmountToAddress(address, game.get.amount.get)
     }else{
       ""
     }

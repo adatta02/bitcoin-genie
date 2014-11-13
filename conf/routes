@@ -18,7 +18,8 @@ POST    /play-deal/:publicKey              controllers.DealOrNoDeal.playDeal(pub
 POST    /take-deal/:publicKey              controllers.DealOrNoDeal.takeDeal(publicKey: String)
 POST    /get-redeem-key/:publicKey              controllers.DealOrNoDeal.getRedeemUrl(publicKey: String)
 
-GET     /util/:action               controllers.Application.util(action: String)
+# GET     /util/:action               controllers.Application.util(action: String)
+GET     /util/wallet/:action               controllers.Application.getWalletStatus(action: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
