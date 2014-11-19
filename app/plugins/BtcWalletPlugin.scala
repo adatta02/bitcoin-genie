@@ -72,7 +72,7 @@ class BtcWalletPlugin(app: Application) extends Plugin {
     println( "BALANCE: " + kit.wallet.getBalance )
     
     val targetAddress = new Address(kit.params(), address)       
-    val coinAmount = Coin.parseCoin( "%.10f".format(amount) )    
+    val coinAmount = Coin.parseCoin( "%.7f".format(amount) )    
     
     try {
     	val res = this.kit.wallet.sendCoins(kit.peerGroup(), targetAddress, coinAmount)
